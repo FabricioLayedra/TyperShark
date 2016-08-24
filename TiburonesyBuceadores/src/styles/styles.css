@@ -1,0 +1,12 @@
+.root {
+    -fx-background-image: url(../files/fondos/fondo1.jpg) ;
+    -fx-backgroun-size: 1280 940;
+}
+.juego {
+    -fx-background-image: url(../files/fondos/fondito.gif);
+    -fx-background-size: 1280 940;
+}
+.instrucciones {
+    -fx-background-image: url(../files/fondos/fondito.gif) ;
+    -fx-backgroun-size: 1280 940;
+}
