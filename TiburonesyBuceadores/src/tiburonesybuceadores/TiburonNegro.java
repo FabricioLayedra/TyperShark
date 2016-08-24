@@ -28,6 +28,7 @@ public class TiburonNegro extends Tiburon{
         this.animal.getChildren().add(formarAnimal(Constantes.TIBURON_NEGRO_IMAGE,300,150));
         
     }
+    @Override
     public String obtenerCaracteresActuales(){
         return this.palabrasActuales[0];        
     }

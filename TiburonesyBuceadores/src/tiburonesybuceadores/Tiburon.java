@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package tiburonesybuceadores;
-
 import com.sun.javafx.iio.ImageFrame;
 import com.sun.javafx.iio.ImageStorage;
 import com.sun.javafx.iio.ImageStorageException;
