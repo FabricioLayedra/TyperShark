@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 
 /**
  *
- * @author user
+ * @author Daniel Santacruz
  */
 public class TiburonesyBuceadores extends Application {
     

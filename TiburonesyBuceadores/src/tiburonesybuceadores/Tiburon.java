@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package tiburonesvsbuceadores;
+package tiburonesybuceadores;
 
 import com.sun.javafx.iio.ImageFrame;
 import com.sun.javafx.iio.ImageStorage;
@@ -24,7 +24,7 @@ import javafx.scene.layout.StackPane;
 
 /**
  *
- * @author Uchiha ClanPc
+ * @author Fabricio Layedra
  */
 public class Tiburon extends AnimalMarino {   
     private String palabraActual;
