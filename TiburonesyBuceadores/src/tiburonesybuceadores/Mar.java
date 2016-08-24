@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package tiburonesybuceadores;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import javafx.event.ActionEvent;
@@ -28,6 +27,12 @@ public class Mar {//Pane Organizer
     private LinkedList<Buceador> mejoresBuceadores;//cotrol del puntaje;
     private ArrayList<AnimalMarino> animalesEnMar;
     private Buceador buceador;
+    private int puntos= 0;
+
+    public int getPuntos() {
+        return puntos;
+    }
+
 
     public Mar(double fondo) {
         this.mar = new Pane();
@@ -81,7 +86,7 @@ public class Mar {//Pane Organizer
     }
 
     public Thread ingresarPersonaAlMar(String nombre) {
-        this.buceador = new Buceador(nombre, 0, 100.0, 20.0);
+        this.buceador = new Buceador(nombre, 0, 0.0, 20.0);
         this.mar.getChildren().add(this.buceador.getPersona());
 
         return new Thread(buceador);
@@ -155,6 +160,7 @@ public class Mar {//Pane Organizer
         private String caracterIngresado = "";
         private String palabrasAEscribir;
         private String caracterActual;
+        
 
         public MarLimpio() {
 
@@ -179,6 +185,10 @@ public class Mar {//Pane Organizer
                                 //no hacer remove si no se puede
                             }
                             mar.getChildren().remove(tiburonTemp.getTiburon());
+                            int puntosAct= this.palabrasEscritas.length();
+                            puntos +=puntosAct;
+                            buceador.setPuntos(puntos);
+                            System.out.print(puntos);
                             this.palabrasEscritas = "";
                             iterar = false;
                             break;
@@ -187,6 +197,7 @@ public class Mar {//Pane Organizer
                 }
 
             }
+            
             if (iterar) {
                 for (int i = 0; i < animalesEnMar.size(); i++) {
                     if (animalesEnMar.get(i).getClass().getSimpleName().equals("Pirania")) {
@@ -198,6 +209,10 @@ public class Mar {//Pane Organizer
                                 //no hacer remove si no se puede
                             }
                             mar.getChildren().remove(piraniaTemp.getAnimal());
+                            int puntosAct= this.palabrasEscritas.length();
+                            puntos +=puntosAct;
+                            buceador.setPuntos(puntos);
+                            System.out.print(puntos);
                             this.palabrasEscritas = "";
                             break;
                         }
