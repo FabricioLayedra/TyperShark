@@ -5,39 +5,43 @@
  */
 package tiburonesybuceadores;
 
+import java.io.File;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.util.Duration;
+
+
 
 /**
  *
  * @author Daniel Santacruz
  */
 public class TiburonesyBuceadores extends Application {
+    MediaPlayer mediaplayer;
     
     @Override
     public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
+        String path = new File("src/tiburonesvsbuceadores/sonido.mp3").getAbsolutePath();
         
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
+        Media musicFile = new Media (new File(path).toURI().toString());
+        mediaplayer = new MediaPlayer(musicFile);
+        mediaplayer.setAutoPlay(true);
+        mediaplayer.setVolume(0.3);
+        mediaplayer.setCycleCount((int)(Duration.INDEFINITE.toHours()));
+        PaneOrganizer principal= new PaneOrganizer();
+
+        primaryStage.setResizable(false);
+        primaryStage.setTitle("Tiburones y Buceadores");
         
-        Scene scene = new Scene(root, 300, 250);
-        System.out.print("Prueba");
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(principal.getScene());
         primaryStage.show();
     }
 
