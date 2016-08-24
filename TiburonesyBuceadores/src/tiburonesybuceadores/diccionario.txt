@@ -1,0 +1,15 @@
+libro
+gato
+perro
+temor
+daño
+justicia
+amistad
+amigo
+velero
+brasero
+mesa
+ventana
+computadora
+silla
+traidor
