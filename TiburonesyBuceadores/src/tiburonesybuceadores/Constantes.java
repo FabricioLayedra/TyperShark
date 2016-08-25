@@ -17,10 +17,10 @@ public class Constantes {
     public static final double TAM_MAR_X=840;
     public static final double TAM_MAR_Y=720;
     public static final double FONDO_MAR_LVL_1=20;
-    public static final double VELOCIDAD_INI_TIBU=2.0;
-    public static final double VELOCIDAD_INI_PIRANIA=4.0;
-    public static final double VELOCIDAD_INI_TIBU_NEGRO=1.0;
-    public static final int MAX_ANIMALES_LVL_1=20;   
+    public static final double VELOCIDAD_INI_TIBU=0.5;
+    public static final double VELOCIDAD_INI_PIRANIA=1.0;
+    public static final double VELOCIDAD_INI_TIBU_NEGRO=0.25;
+    public static final int MAX_ANIMALES_LVL_1=10;   
     public static final Image TIBURON_IMAGE=
         new Image(Tiburon.class.getResourceAsStream("tiburon.gif"));
     public static final Image PIRANIA_IMAGE=
@@ -34,8 +34,8 @@ public class Constantes {
     public static final double TAM_BOTON_INI_Y=40.0;
     public static final double BUCEADOR_X=0.0;
     public static final double BUCEADOR_Y=0.0;
-    public static final long VELOCIDAD_APARICION_LVL_1=1500;
-    public static final Font FUENTE_LETRAS = new Font("Cambria",30);
+    public static final long VELOCIDAD_APARICION_LVL_1=15000;
+    public static final Font FUENTE_LETRAS = new Font("Comic Sans MS",25);
     public static  boolean HACER_BUZO=true;
     public static final String INSTRUCCIONES = "Instrucciones: \n "
             + "1. Para ganar puntos: Teclea las palabras que aparezcan\n en los animales marinos. \n\n"

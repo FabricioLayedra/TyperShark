@@ -22,9 +22,12 @@ import javafx.geometry.Pos;
 import java.io.IOException;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -48,8 +51,9 @@ public class PaneOrganizer {
     VBox nombre;
     Label nivel;
     String nombre_jugador;
-
-     public PaneOrganizer() {
+    private Label titulo;
+    
+    public PaneOrganizer() {
         this.nombre_jugador = pedirNombre();
         this.mar = new Mar(Constantes.FONDO_MAR_LVL_1);
         this.raiz = mar.getPanelInicial();
@@ -60,10 +64,18 @@ public class PaneOrganizer {
         this.raiz.getStyleClass().add("root");
         this.nivel=new Label();
         this.mar.getMar().getChildren().add(this.nivel);
-        
+        this.setTitle("Tiburones y Buceadores");
 
     }
-
+     
+    private void setTitle(String titulo){
+        this.titulo = new Label(titulo);
+        this.titulo.setLayoutX(150);
+        this.titulo.setLayoutY(40);
+        this.titulo.setFont(new Font("Comic Sans MS",50));
+        this.raiz.getChildren().add(this.titulo);
+        this.titulo.setTextFill(Color.WHITESMOKE);
+    }
     public Scene getScene() {
         return this.scene;
     }
@@ -75,32 +87,34 @@ public class PaneOrganizer {
         this.botones = new Button[]{iniciar, instrucciones, mejoresJugadores, salir};
 
     }
-    public void configurarLabelNivel(int nivel) throws InterruptedException{
-        this.nivel.setText("NIVEL "+ String.valueOf(nivel));
-        this.nivel.setPrefSize(300, 250);
-        this.nivel.setLayoutX(Constantes.TAM_MAR_X/2);
-        this.nivel.setLayoutY(Constantes.TAM_MAR_Y/2);
-        Thread.sleep(6000);
-        this.nivel.setLayoutX(10000);
-        this.nivel.setLayoutY(10000);
-    }
+
     private void configurarBotones() {
         
         this.crearPanelBotones();
         buttons = new VBox();
 
-        for (int i = 0; i < botones.length; i++) {
-
-            Button temp = botones[i];
-            temp.setPrefSize(Constantes.TAM_BOTON_INI_X, Constantes.TAM_BOTON_INI_Y);
+        for (Button temp : botones) {
+            //temp.setPrefSize(Constantes.TAM_BOTON_INI_X, Constantes.TAM_BOTON_INI_Y);
+            temp.setStyle("-fx-font: 35 Perpetua; -fx-base: #5198CF;");
+            temp.setTextFill(Color.WHITE);
+            
+            temp.autosize();
+            DropShadow shadow = new DropShadow();
+            //Adding the shadow when the mouse cursor is on
+            temp.addEventHandler(MouseEvent.MOUSE_ENTERED, (MouseEvent e) -> {
+                temp.setEffect(shadow);
+            });
+            
+            temp.addEventHandler(MouseEvent.MOUSE_EXITED, (MouseEvent e) -> {
+                temp.setEffect(null);
+            });
             buttons.getChildren().add(temp);
-            buttons.setSpacing(20);
-
+            buttons.setSpacing(50);
+            buttons.setAlignment(Pos.CENTER);
             temp.setOnAction(new AccionBotones(temp.getText()));
-
         }
-        buttons.setLayoutX(570);
-        buttons.setLayoutY(300);
+        buttons.setLayoutX((Constantes.TAM_MAR_X/2)-120);
+        buttons.setLayoutY(200);
         this.raiz.getChildren().add(buttons);
         regresar = new Button("Menu Principal");
         regresar.setOnAction(new AccionBotones("Regresar"));
@@ -109,18 +123,21 @@ public class PaneOrganizer {
     private String pedirNombre() {
             
             Stage stage = new Stage();
-            Label tag = new Label("Ingrese nombre del jugador: ");
+            stage.setResizable(false);
+            Label tag = new Label("¡Bienvenido a Tiburones y Buceadores!\n"
+                    + "Ingrese su nombre: ");
+            tag.setAlignment(Pos.CENTER);
             TextField name = new TextField("");
             Button btn = new Button("OK");
             VBox nombre = new VBox();
-            btn.setAlignment(Pos.CENTER);
+            nombre.setAlignment(Pos.CENTER);
             nombre.getChildren().addAll(tag,name,btn);
             name.setScaleX(0.85);
+            nombre.setSpacing(20);
             //btn.setLayoutX(0);
             
             btn.setOnAction(e-> {
-                    stage.close();
-                   
+                    stage.close();   
             }
             );
             
@@ -129,7 +146,7 @@ public class PaneOrganizer {
             stage.setHeight(200);
             stage.setWidth(250);
             stage.setAlwaysOnTop(true);
-            stage.setTitle("Nombre Jugador");
+            stage.setTitle("Inicio");
             
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
@@ -166,23 +183,24 @@ public class PaneOrganizer {
             final Random rnd = new Random();
             final Buceador buceador = new Buceador("fulano", 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200);
             final Label puntos = new Label(String.valueOf(mar.getPuntos()));
+            puntos.setLayoutX(Constantes.TAM_MAR_X - 150);
+            puntos.setLayoutY(0);
+            puntos.setFont(Constantes.FUENTE_LETRAS);
+            puntos.autosize();
+            puntos.setTextFill(Color.RED);
+            raiz.getChildren().add(puntos);
             Thread juego;
             juego = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
                     while (buceador.getVidas() > 0) {
-                        try {                        
-                            configurarLabelNivel(mar.getNivelMarea());
-                            System.out.println("Entro al nivel");
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+
                         while (!(buceador.llegarAlFondo(mar))) {
                             final double yTiburon = rnd.nextInt((int) Constantes.TAM_MAR_Y - 150) + 25;
                             double yPirania = rnd.nextInt((int) Constantes.TAM_MAR_Y - 150) + 25;
                             final double yTiburonNegro = rnd.nextInt((int) Constantes.TAM_MAR_Y - 150) + 50;
-                            int maximoAnimales = Constantes.MAX_ANIMALES_LVL_1*mar.getNivelMarea() + ((mar.getNivelMarea() - 1) * rnd.nextInt(15));
+                            int maximoAnimales = Constantes.MAX_ANIMALES_LVL_1+mar.getNivelMarea() + ((mar.getNivelMarea() - 1) * rnd.nextInt(15));
                             final int probabilidades = rnd.nextInt(100) + 1;
                             //en la misma iteracion tiene que salir al menos un animal.
                             Platform.runLater(new Runnable() {
@@ -196,26 +214,21 @@ public class PaneOrganizer {
 
                                     }
                                     if (probabilidades <= 60) {
-                                        Thread piraniaTemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_PIRANIA*mar.getNivelMarea(), Constantes.TAM_MAR_X, yTiburon, abecedario);
+                                        Thread piraniaTemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_PIRANIA+(mar.getNivelMarea()/100), Constantes.TAM_MAR_X, yTiburon, abecedario);
                                         piraniaTemp.start();
                                         int probabilidades = rnd.nextInt(100) + 1;
                                     }
                                     if (probabilidades < 85 && probabilidades > 60) {
-                                        Thread tiburonTemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_TIBU*mar.getNivelMarea(), Constantes.TAM_MAR_X, yTiburon, diccionario);
+                                        Thread tiburonTemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_TIBU+(mar.getNivelMarea()/100), Constantes.TAM_MAR_X, yTiburon, diccionario);
                                         tiburonTemp.start();
                                         int probabilidades = rnd.nextInt(100) + 1;
                                     }
                                     if (probabilidades >= 85) {
-                                        Thread tiburonNegroTemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_TIBU_NEGRO*mar.getNivelMarea(), Constantes.TAM_MAR_X, yTiburonNegro, diccionario);
+                                        Thread tiburonNegroTemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_TIBU_NEGRO+(mar.getNivelMarea()/100), Constantes.TAM_MAR_X, yTiburonNegro, diccionario);
                                         tiburonNegroTemp.start();
                                     }
-                                    puntos.setText(String.valueOf(mar.getPuntos()));
-                                    puntos.setLayoutX(Constantes.TAM_MAR_X - 20);
-                                    puntos.setLayoutY(0);
-                                    puntos.setFont(Constantes.FUENTE_LETRAS);
-                                    puntos.autosize();
-                                    puntos.setTextFill(Color.RED);
-                                    raiz.getChildren().add(puntos);
+                                    puntos.setText("Puntos: " + String.valueOf(mar.getPuntos()));
+                                    
                                     mar.setNivelMarea(mar.getNivelMarea()+1);
                                 }
                             });
@@ -247,7 +260,7 @@ public class PaneOrganizer {
         @Override
         public void handle(ActionEvent event) {
             raiz.getChildren().remove(buttons);
-            
+            raiz.getChildren().remove(titulo);
             
             raiz.getChildren().add(regresar);
             switch (opcion) {
@@ -255,8 +268,6 @@ public class PaneOrganizer {
                 case "Iniciar": {
                     regresar.setLayoutX(0);
                     regresar.setLayoutY(Constantes.TAM_MAR_Y-20);
-                    raiz.getStylesheets().add("styles/styles.css");
-                    raiz.getStyleClass().add("juego");
                     this.jugar();
                     break;
                 }
@@ -264,8 +275,6 @@ public class PaneOrganizer {
                 case "Ver Instrucciones": {
                     regresar.setLayoutX(Constantes.TAM_MAR_X-60);
                     regresar.setLayoutY(Constantes.TAM_MAR_Y-40);
-                    raiz.getStylesheets().add("styles/styles.css");    
-                    raiz.getStyleClass().add("instrucciones");
                     this.verInstrucciones();
                     break;
                 }
@@ -273,8 +282,6 @@ public class PaneOrganizer {
                 case "Mejores Jugadores": {
                     regresar.setLayoutX(Constantes.TAM_MAR_X-60);
                     regresar.setLayoutY(Constantes.TAM_MAR_Y-40);
-                    raiz.getStylesheets().add("styles/styles.css");
-                    raiz.getStyleClass().add("bestPlayers");
                     this.verMejJugadores();
                     break;
                 }
