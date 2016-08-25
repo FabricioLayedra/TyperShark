@@ -45,4 +45,5 @@ public class Constantes {
             + "2. Si alguno de ellos te toca, pierdes una vida. \n"
             + "...";
     public static int TOP_MEJORES_JUGADORES=10;
+    public static int marcaDeNacimiento=0;
 }

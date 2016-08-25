@@ -152,7 +152,8 @@ public class Mar {//Pane Organizer
         
         //Probabilidad > 85, se crea Tiburón negro
         if (probabilidades >= 85) {
-            animalMarino = (TiburonNegro) new TiburonNegro(velocidad, posIniX, posIniY);
+            animalMarino = (TiburonNegro) new TiburonNegro(velocidad, posIniX, posIniY,Constantes.marcaDeNacimiento);
+            Constantes.marcaDeNacimiento++;
             animalMarino.aparecerCaracteresActuales(diccionario);
         }
         
@@ -227,6 +228,40 @@ public class Mar {//Pane Organizer
                             break;
                         }
                     }
+                }
+            }
+            if (iterar) {
+                for (int i = 0; i < animalesEnMar.size(); i++) {                   
+                    if (animalesEnMar.get(i).getClass().getSimpleName().equals("TiburonNegro")) {
+                        TiburonNegro tibNegroTemp = (TiburonNegro) animalesEnMar.get(i);
+                        System.out.println(tibNegroTemp.obtenerCaracteresActuales());
+                        if (this.palabrasEscritas.contains(tibNegroTemp.obtenerCaracteresActuales())) {
+                            animalesEnMar.get(i).getAnimal().getChildren().remove(1);
+                            animalesEnMar.get(i).setPalabrasAEliminar();
+                            System.out.println(animalesEnMar.get(i).getPalabrasAEliminar());
+                            if (animalesEnMar.get(i).getPalabrasAEliminar() == 0) {
+                                System.out.println(animalesEnMar.get(i).getMarcaDeNacimiento());
+                                try {
+                                    animalesEnMar.remove(animalesEnMar.get(i));
+                                    System.out.println(animalesEnMar.get(i).getMarcaDeNacimiento());
+                                    System.out.println(animalesEnMar.get(i).getMarcaDeNacimiento());
+                                    mar.getChildren().remove(animalesEnMar.get(i).getAnimal());
+                                } catch (ClassCastException e) {
+                                    //no hacer remove si no se puede
+                                }                              
+                                int puntosAct = this.palabrasEscritas.length();
+                                puntos += puntosAct;
+                                buceador.setPuntos(puntos);
+                                this.palabrasEscritas = "";
+                                break;
+
+                            }
+                            this.palabrasEscritas = "";
+                            break;
+
+                        }
+                    }
+
                 }
             }
         }
