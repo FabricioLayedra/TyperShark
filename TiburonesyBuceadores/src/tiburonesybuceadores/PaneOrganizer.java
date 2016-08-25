@@ -206,12 +206,23 @@ public class PaneOrganizer {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
+                                    for(int i=0;i<mar.getAnimalesEnMar().size();i++){
+                                        if(mar.getAnimalesEnMar().get(i).getAnimal().getLayoutX()<=0){
+                                            buceador.setVidas(buceador.getVidas()-1);
+                                            
+                                        }
+                                        
+                                    }
+                                    if(buceador.getVidas() <= 0){
+                                       // mar.getMar().getChildren().remove(buceador.gtPersona());
+                                        //aqui se muere el bceador
+                                        
+                                    }
 
                                     if (Constantes.HACER_BUZO) {
                                         Thread buceadorMoviendose = mar.ingresarPersonaAlMar(nombre_jugador);
                                         buceadorMoviendose.start();
                                         Constantes.HACER_BUZO = false;
-
                                     }
                                     if (probabilidades <= 60) {
                                         Thread piraniaTemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_PIRANIA+(mar.getNivelMarea()/100), Constantes.TAM_MAR_X, yTiburon, abecedario);
