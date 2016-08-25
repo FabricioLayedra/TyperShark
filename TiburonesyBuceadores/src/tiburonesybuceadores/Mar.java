@@ -17,13 +17,15 @@ import javafx.scene.shape.Shape;
  *
  * @author Harold Aragon
  */
+ 
+ //Clase que interactuará con todos nuestros objetos (Buceador, Piraña y tiburones)
 public class Mar {//Pane Organizer
 
     private Pane mar;
     private Pane panelInicial;
     private Scene marea;
     private double distanciaAlFondo;
-    private int nivelMarea;//multiplicador de velociada
+    private int nivelMarea;//multiplicador de velocidad
     private LinkedList<Buceador> mejoresBuceadores;//cotrol del puntaje;
     private ArrayList<AnimalMarino> animalesEnMar;
     private Buceador buceador;
@@ -33,7 +35,7 @@ public class Mar {//Pane Organizer
         return puntos;
     }
 
-
+    //Constructor
     public Mar(double fondo) {
         this.mar = new Pane();
         this.mar.setPrefSize(Constantes.TAM_MAR_X, Constantes.TAM_MAR_Y);
@@ -52,7 +54,8 @@ public class Mar {//Pane Organizer
     public void aumentarNivel() {
         this.nivelMarea = this.nivelMarea + 1;
     }
-
+    
+    //Getters and Setters
     public double getDistanciaAlFondo() {
         return distanciaAlFondo;
     }
@@ -85,51 +88,6 @@ public class Mar {//Pane Organizer
         this.mejoresBuceadores = MejoresBuceadores;
     }
 
-    public Thread ingresarPersonaAlMar(String nombre) {
-        this.buceador = new Buceador(nombre, 0, 0.0, 20.0);
-        this.mar.getChildren().add(this.buceador.getPersona());
-
-        return new Thread(buceador);
-
-    }
-
-    public Thread ingresarAnimalAlMar(int probabilidades, double velocidad, double posIniX, double posIniY, String[] diccionario) {
-        AnimalMarino animalMarino = new AnimalMarino() {
-            @Override
-            public void aparecerCaracteresActuales(String[] caracteres) {
-            }
-
-            @Override
-            public String obtenerCaracteresActuales() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            public void setPalabraActual(String palabra) {
-            }
-        };
-
-        if (probabilidades <= 60) {
-            String[] abecedario = diccionario;
-            animalMarino = new Pirania(velocidad, posIniX, posIniY);
-            animalMarino.aparecerCaracteresActuales(abecedario);
-        }
-        if (probabilidades > 60 && probabilidades < 85) {
-            animalMarino = new Tiburon(velocidad, posIniX, posIniY);
-            animalMarino.aparecerCaracteresActuales(diccionario);
-        }
-        if (probabilidades >= 85) {
-            animalMarino = (TiburonNegro) new TiburonNegro(velocidad, posIniX, posIniY);
-            animalMarino.aparecerCaracteresActuales(diccionario);
-        }
-
-        this.animalesEnMar.add(animalMarino);
-        this.mar.getChildren().add(animalMarino.getAnimal());
-
-        return new Thread(animalMarino);
-
-    }
-
     public Pane getPanelInicial() {
         return this.panelInicial;
     }
@@ -153,7 +111,59 @@ public class Mar {//Pane Organizer
     public void setBuceador(Buceador buceador) {
         this.buceador = buceador;
     }
+    
+    
+    //Se crea un buceador como hilo 
+    public Thread ingresarPersonaAlMar(String nombre) {
+        this.buceador = new Buceador(nombre, 0, 0.0, 20.0);
+        this.mar.getChildren().add(this.buceador.getPersona());
 
+        return new Thread(buceador);
+
+    }
+
+    //Se crean los diferentes tipos de animales del proyecto como hilos, de acuerdo a las "probabilidades que salgan"
+    public Thread ingresarAnimalAlMar(int probabilidades, double velocidad, double posIniX, double posIniY, String[] diccionario) {
+        AnimalMarino animalMarino = new AnimalMarino() {
+            @Override
+            public void aparecerCaracteresActuales(String[] caracteres) {
+            }
+
+            @Override
+            public String obtenerCaracteresActuales() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void setPalabraActual(String palabra) {
+            }
+        };
+        //Probabilidad < 60, se crea piraña
+        if (probabilidades <= 60) {
+            String[] abecedario = diccionario;
+            animalMarino = new Pirania(velocidad, posIniX, posIniY);
+            animalMarino.aparecerCaracteresActuales(abecedario);
+        }
+         // 60 < Probabilidad < 85, se crea tiburon
+        if (probabilidades > 60 && probabilidades < 85) {
+            animalMarino = new Tiburon(velocidad, posIniX, posIniY);
+            animalMarino.aparecerCaracteresActuales(diccionario);
+        }
+        
+        //Probabilidad > 85, se crea Tiburón negro
+        if (probabilidades >= 85) {
+            animalMarino = (TiburonNegro) new TiburonNegro(velocidad, posIniX, posIniY);
+            animalMarino.aparecerCaracteresActuales(diccionario);
+        }
+        
+        this.animalesEnMar.add(animalMarino);//Se agrega al arrayList el animal creado
+        this.mar.getChildren().add(animalMarino.getAnimal());//Se agrega al Mar (Pane), el animal marino
+
+        return new Thread(animalMarino);
+
+    }
+    
+    //Clase que manejará los eventos del teclado y removerá el animalMarino creado
     private class MarLimpio implements EventHandler<KeyEvent> {
 
         private String palabrasEscritas = "";
