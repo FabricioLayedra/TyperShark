@@ -29,7 +29,7 @@ public class TiburonesyBuceadores extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        String path = new File("src/tiburonesvsbuceadores/sonido.mp3").getAbsolutePath();
+        String path = new File("src/tiburonesybuceadores/sonido.mp3").getAbsolutePath();
         
         Media musicFile = new Media (new File(path).toURI().toString());
         mediaplayer = new MediaPlayer(musicFile);

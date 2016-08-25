@@ -19,8 +19,6 @@ import javafx.scene.layout.Pane;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
-
 import java.io.IOException;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -58,7 +56,6 @@ public class PaneOrganizer {
         this.raiz.getChildren().add(mar.getMar());
         this.configurarBotones();
         this.scene = mar.getMarea();
-
         this.raiz.getStylesheets().add("styles/styles.css");
         this.raiz.getStyleClass().add("root");
         this.nivel=new Label();
@@ -70,7 +67,6 @@ public class PaneOrganizer {
     public Scene getScene() {
         return this.scene;
     }
-
     private void crearPanelBotones() {
         iniciar = new Button("Iniciar");
         instrucciones = new Button("Ver Instrucciones");
@@ -80,7 +76,7 @@ public class PaneOrganizer {
 
     }
     public void configurarLabelNivel(int nivel) throws InterruptedException{
-        this.nivel.setText("NIVEL "+nivel);
+        this.nivel.setText("NIVEL "+ String.valueOf(nivel));
         this.nivel.setPrefSize(300, 250);
         this.nivel.setLayoutX(Constantes.TAM_MAR_X/2);
         this.nivel.setLayoutY(Constantes.TAM_MAR_Y/2);
@@ -88,7 +84,6 @@ public class PaneOrganizer {
         this.nivel.setLayoutX(10000);
         this.nivel.setLayoutY(10000);
     }
-
     private void configurarBotones() {
         
         this.crearPanelBotones();
@@ -107,6 +102,8 @@ public class PaneOrganizer {
         buttons.setLayoutX(570);
         buttons.setLayoutY(300);
         this.raiz.getChildren().add(buttons);
+        regresar = new Button("Menu Principal");
+        regresar.setOnAction(new AccionBotones("Regresar"));
 
     }
     private String pedirNombre() {
@@ -127,7 +124,7 @@ public class PaneOrganizer {
             }
             );
             
-            Scene scene = new Scene(nombre, 110,100);
+            Scene scene = new Scene(nombre, 300,300);
             stage.setScene(scene);
             stage.setHeight(200);
             stage.setWidth(250);
@@ -148,11 +145,10 @@ public class PaneOrganizer {
         }
 
         public void jugar() {
-            buttons.setLayoutX(10000);
-            buttons.setLayoutY(10000);
+            
             Scanner palabras = null;
             try {
-                palabras = new Scanner(new File("src/tiburonesvsbuceadores/diccionario.txt"));
+                palabras = new Scanner(new File("src/tiburonesybuceadores/diccionario.txt"));
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -220,6 +216,7 @@ public class PaneOrganizer {
                                     puntos.autosize();
                                     puntos.setTextFill(Color.RED);
                                     raiz.getChildren().add(puntos);
+                                    mar.setNivelMarea(mar.getNivelMarea()+1);
                                 }
                             });
                             try {
@@ -237,7 +234,7 @@ public class PaneOrganizer {
                         } catch (InterruptedException ex) {
                             Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        mar.setNivelMarea(mar.getNivelMarea()+1);
+                        
                         mar.setDistanciaAlFondo(mar.getDistanciaAlFondo()*mar.getNivelMarea());
                         
                       
@@ -249,9 +246,15 @@ public class PaneOrganizer {
 
         @Override
         public void handle(ActionEvent event) {
+            raiz.getChildren().remove(buttons);
+            
+            
+            raiz.getChildren().add(regresar);
             switch (opcion) {
-
+                
                 case "Iniciar": {
+                    regresar.setLayoutX(0);
+                    regresar.setLayoutY(Constantes.TAM_MAR_Y-20);
                     raiz.getStylesheets().add("styles/styles.css");
                     raiz.getStyleClass().add("juego");
                     this.jugar();
@@ -259,13 +262,17 @@ public class PaneOrganizer {
                 }
 
                 case "Ver Instrucciones": {
-
+                    regresar.setLayoutX(Constantes.TAM_MAR_X-60);
+                    regresar.setLayoutY(Constantes.TAM_MAR_Y-40);
+                    raiz.getStylesheets().add("styles/styles.css");    
                     raiz.getStyleClass().add("instrucciones");
                     this.verInstrucciones();
                     break;
                 }
 
                 case "Mejores Jugadores": {
+                    regresar.setLayoutX(Constantes.TAM_MAR_X-60);
+                    regresar.setLayoutY(Constantes.TAM_MAR_Y-40);
                     raiz.getStylesheets().add("styles/styles.css");
                     raiz.getStyleClass().add("bestPlayers");
                     this.verMejJugadores();
@@ -281,42 +288,25 @@ public class PaneOrganizer {
 
         }
 
-        private void verInstrucciones() {
-            buttons.setLayoutX(10000);
-            buttons.setLayoutY(10000);
-            raiz.getChildren().add(iniciar);
-            iniciar.setLayoutX(Constantes.TAM_MAR_X);
-            iniciar.setLayoutY(Constantes.TAM_MAR_Y);
-            Label instructions = new Label(Constantes.INSTRUCCIONES);
-            instructions.setTextAlignment(TextAlignment.LEFT);
-            instructions.setLayoutX((Constantes.TAM_MAR_X / 2)+30);
-            instructions.setLayoutY((Constantes.TAM_MAR_Y / 2)-100);
-            instructions.setTextFill(Color.RED);
-            instructions.setLineSpacing(10);
-            raiz.getChildren().add(instructions);
-        }
-
+        
         private void verMejJugadores() {
             Scanner scores = null;
             String mej_jug = "";
             try {
-                scores = new Scanner(new File("src/tiburonesvsbuceadores/scores.txt"));
+                scores = new Scanner(new File("src/tiburonesybuceadores/scores.txt"));
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
             }
             final String[] mejores_jugadores;
             mejores_jugadores = new String[Constantes.TOP_MEJORES_JUGADORES];
-                      
-            buttons.setLayoutX(10000);
-            buttons.setLayoutY(10000);
+            
             raiz.getChildren().add(iniciar);
-            iniciar.setLayoutX((Constantes.TAM_MAR_X / 2)+150);
-            iniciar.setLayoutY((Constantes.TAM_MAR_Y / 2)+250);
+
             Label the_best_players = new Label();
             the_best_players.setTextAlignment(TextAlignment.CENTER);
             the_best_players.setLayoutX((Constantes.TAM_MAR_X / 2)+150);
             the_best_players.setLayoutY((Constantes.TAM_MAR_Y / 2)-100);
-            the_best_players.setTextFill(Color.RED);
+            the_best_players.setTextFill(Color.WHITE);
             the_best_players.setLineSpacing(10);
                       
             int indice = 0;
@@ -332,7 +322,22 @@ public class PaneOrganizer {
                 
         }
 
+        private void verInstrucciones() {
+
+
+            Label instructions = new Label(Constantes.INSTRUCCIONES);
+            instructions.setTextAlignment(TextAlignment.LEFT);
+            instructions.setLayoutX((Constantes.TAM_MAR_X / 2)+30);
+            instructions.setLayoutY((Constantes.TAM_MAR_Y / 2)-100);
+            instructions.setTextFill(Color.RED);
+            instructions.setLineSpacing(10);
+            raiz.getChildren().add(instructions);
+            
+        }
+
         
 
     }
+
+
 }
