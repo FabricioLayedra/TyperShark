@@ -27,11 +27,13 @@ public abstract class AnimalMarino implements Runnable {
     protected double velocidadInicial;
     protected StackPane animal;
     protected Label palabraEncimaAnimal;
-
+    
+    //Constructor por defecto
     public AnimalMarino() {
 
     }
 
+    //Constructor con velocidadIncial
     public AnimalMarino(double velocidadInicial) {
         this.velocidadInicial = velocidadInicial;
 
@@ -54,6 +56,13 @@ public abstract class AnimalMarino implements Runnable {
                         } else {
                             sube_baja = -1;
                         }
+                        
+                        if(animal.getLayoutX()-velocidadInicial == 100){
+                            //Si entra a este if es porque el animal (sea piraña, tiburon o tiburon negro)
+                            //ha tocado la zona del buceador
+                            System.out.println("Se debio de haber quitado una vida");
+                        }
+                        
                         animal.setLayoutX(animal.getLayoutX() - velocidadInicial);
                         animal.setLayoutY(animal.getLayoutY() + sube_baja);
                     }
@@ -73,6 +82,7 @@ public abstract class AnimalMarino implements Runnable {
 
     public abstract String obtenerCaracteresActuales();
 
+    //Formar animal con un tamaño de largo y alto, con su respectiva imagen    
     public ImageView formarAnimal(Image imagen, double largo, double alto) {
         ImageView animal = new ImageView();
         animal.setImage(imagen);
@@ -82,7 +92,7 @@ public abstract class AnimalMarino implements Runnable {
     }
 
     ;
-
+    //Getters and Setters
     public double getVelocidadInicial() {
         return velocidadInicial;
     }
@@ -98,7 +108,8 @@ public abstract class AnimalMarino implements Runnable {
     public void setAnimal(StackPane animal) {
         this.animal = animal;
     }
-
+    
+    //Colocar palabra sobre la mitad del animal
     public void ponerPalabraEncima(String palabra) {
         this.palabraEncimaAnimal.setText(palabra);
         this.animal.getChildren().add(palabraEncimaAnimal);
@@ -108,6 +119,7 @@ public abstract class AnimalMarino implements Runnable {
 
     public abstract void setPalabraActual(String palabra);
 
+    //Se setea la fuente de las letras que aparecerán
     public void configurarLetras() {
         this.palabraEncimaAnimal.setFont(Constantes.FUENTE_LETRAS);
     }

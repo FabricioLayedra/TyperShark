@@ -13,6 +13,9 @@ import javafx.scene.text.Font;
  *
  * @author Harold Aragon
  */
+ 
+ 
+//Clase de constantes del proyecto 
 public class Constantes {
     public static final double TAM_MAR_X=840;
     public static final double TAM_MAR_Y=720;
