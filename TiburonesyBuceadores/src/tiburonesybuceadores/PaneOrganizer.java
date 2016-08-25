@@ -53,6 +53,8 @@ public class PaneOrganizer {
     String nombre_jugador;
     private Label titulo;
     
+    
+    
     public PaneOrganizer() {
         this.nombre_jugador = pedirNombre();
         this.mar = new Mar(Constantes.FONDO_MAR_LVL_1);
@@ -65,6 +67,7 @@ public class PaneOrganizer {
         this.nivel=new Label();
         this.mar.getMar().getChildren().add(this.nivel);
         this.setTitle("Tiburones y Buceadores");
+       
 
     }
      
@@ -153,6 +156,9 @@ public class PaneOrganizer {
             
             return name.getText();
         }
+
+
+    
     private class AccionBotones implements EventHandler<ActionEvent> {
 
         String opcion;
@@ -181,14 +187,22 @@ public class PaneOrganizer {
             }
             final String[] abecedario = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
             final Random rnd = new Random();
-            final Buceador buceador = new Buceador("fulano", 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200);
+            final Buceador buceador = new Buceador(nombre_jugador, 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200);
             final Label puntos = new Label(String.valueOf(mar.getPuntos()));
-            puntos.setLayoutX(Constantes.TAM_MAR_X - 150);
+            puntos.setLayoutX(Constantes.TAM_MAR_X - 170);
             puntos.setLayoutY(0);
             puntos.setFont(Constantes.FUENTE_LETRAS);
             puntos.autosize();
             puntos.setTextFill(Color.RED);
             raiz.getChildren().add(puntos);
+            final Label vidas = new Label ("VIDAS:   " + String.valueOf(buceador.getVidas()));
+            vidas.setLayoutX(50);
+            vidas.setLayoutY(0);
+            vidas.setFont(Constantes.FUENTE_LETRAS);
+            vidas.autosize();
+            vidas.setTextFill(Color.RED);
+            raiz.getChildren().add(vidas);
+            
             Thread juego;
             juego = new Thread(new Runnable() {
 
@@ -207,8 +221,10 @@ public class PaneOrganizer {
                                 @Override
                                 public void run() {
                                     for(int i=0;i<mar.getAnimalesEnMar().size();i++){
-                                        if(mar.getAnimalesEnMar().get(i).getAnimal().getLayoutX()<=0){
+                                        if(mar.getAnimalesEnMar().get(i).getAnimal().getLayoutX()<=100){
                                             buceador.setVidas(buceador.getVidas()-1);
+                                            vidas.setText("VIDAS:   " + String.valueOf(buceador.getVidas()));
+                                            
                                             
                                         }
                                         
@@ -216,6 +232,7 @@ public class PaneOrganizer {
                                     if(buceador.getVidas() <= 0){
                                        // mar.getMar().getChildren().remove(buceador.gtPersona());
                                         //aqui se muere el bceador
+                                       
                                         
                                     }
 

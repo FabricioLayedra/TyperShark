@@ -38,7 +38,7 @@ public class Constantes {
     public static final double BUCEADOR_X=0.0;
     public static final double BUCEADOR_Y=0.0;
     public static final long VELOCIDAD_APARICION_LVL_1=15000;
-    public static final Font FUENTE_LETRAS = new Font("Comic Sans MS",25);
+    public static final Font FUENTE_LETRAS = new Font("Comic Sans MS",35);
     public static  boolean HACER_BUZO=true;
     public static final String INSTRUCCIONES = "Instrucciones: \n "
             + "1. Para ganar puntos: Teclea las palabras que aparezcan\n en los animales marinos. \n\n"
