@@ -46,4 +46,5 @@ public class Constantes {
             + "...";
     public static int TOP_MEJORES_JUGADORES=10;
     public static int marcaDeNacimiento=0;
+    public static Font GAME_OVER= new Font("Comic Sans MS",100);
 }

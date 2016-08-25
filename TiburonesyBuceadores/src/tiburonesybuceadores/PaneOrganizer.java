@@ -5,6 +5,7 @@
  */
 package tiburonesybuceadores;
 
+import java.io.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Random;
@@ -155,13 +156,13 @@ public class PaneOrganizer {
             stage.showAndWait();
             
             return name.getText();
-        }
-
+    }
 
     
     private class AccionBotones implements EventHandler<ActionEvent> {
 
         String opcion;
+        private Buceador buceador;
 
         public AccionBotones(String opcion) {
             this.opcion = opcion;
@@ -187,7 +188,7 @@ public class PaneOrganizer {
             }
             final String[] abecedario = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
             final Random rnd = new Random();
-            final Buceador buceador = new Buceador(nombre_jugador, 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200);
+            buceador = new Buceador(nombre_jugador, 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200);
             final Label puntos = new Label(String.valueOf(mar.getPuntos()));
             puntos.setLayoutX(Constantes.TAM_MAR_X - 170);
             puntos.setLayoutY(0);
@@ -223,15 +224,21 @@ public class PaneOrganizer {
                                     for(int i=0;i<mar.getAnimalesEnMar().size();i++){
                                         if(mar.getAnimalesEnMar().get(i).getAnimal().getLayoutX()<=100){
                                             buceador.setVidas(buceador.getVidas()-1);
-                                            vidas.setText("VIDAS:   " + String.valueOf(buceador.getVidas()));
-                                            
+                                            vidas.setText("VIDAS:   " + String.valueOf(buceador.getVidas()));      
                                             
                                         }
                                         
                                     }
                                     if(buceador.getVidas() <= 0){
-                                       // mar.getMar().getChildren().remove(buceador.gtPersona());
+                                       //mar.getMar().getChildren().remove(buceador.getPersona());
                                         //aqui se muere el bceador
+                                        final Label gameover = new Label("game over");
+                                        gameover.setTextAlignment(TextAlignment.CENTER);
+                                        gameover.setFont(Constantes.GAME_OVER);
+                                        gameover.autosize();
+                                        raiz.getChildren().add(gameover);
+                                        pedirGuardarPuntaje();
+                                        
                                        
                                         
                                     }
@@ -283,6 +290,7 @@ public class PaneOrganizer {
                 }
             });
             juego.start();
+            
         }
 
         @Override
@@ -369,8 +377,83 @@ public class PaneOrganizer {
             raiz.getChildren().add(instructions);
             
         }
-
         
+        
+    
+        private void pedirGuardarPuntaje(){
+            Stage stage = new Stage();
+            stage.setResizable(false);
+            Label tag = new Label("¡Bienvenido a Tiburones y Buceadores!\n"
+                    + "¿Desea guardar su puntaje? ");
+            tag.setAlignment(Pos.CENTER);
+            Button btnok = new Button("OK");
+            Button btncancel = new Button ("Cancelar");
+            VBox puntaje = new VBox();
+            puntaje.setAlignment(Pos.CENTER);
+            puntaje.getChildren().addAll(tag,btnok,btncancel);
+            
+            puntaje.setSpacing(20);
+            //btn.setLayoutX(0);
+            
+            btnok.setOnAction(e-> {
+                     guardarRegistroPuntaje();
+                     Stage alerta = new Stage();
+                     VBox alert = new VBox();
+                     Button exit = new Button ("Salir");
+                     alert.getChildren().add(exit);
+                     Scene sceneExit = new Scene(alert,100,100);
+                     alerta.setScene(sceneExit);
+                     alerta.setAlwaysOnTop(true);
+                     alerta.setTitle("Se ha guardado su registro correctamente");
+
+                     alerta.initModality(Modality.APPLICATION_MODAL);
+                     alerta.showAndWait();
+                     
+                     
+                     
+            });
+            
+            btncancel.setOnAction(e-> {
+                    stage.close();   
+            });
+
+            Scene scene = new Scene(puntaje, 300,300);
+            stage.setScene(scene);
+            stage.setHeight(200);
+            stage.setWidth(250);
+            stage.setAlwaysOnTop(true);
+            stage.setTitle("¿Desea guardar su puntaje?");
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+           
+        }
+
+        public void  guardarRegistroPuntaje(){
+            String path = new File("src/tiburonesybuceadores/scores.txt").getAbsolutePath();
+            FileWriter fichero = null;
+            PrintWriter pw = null;
+            try
+            {
+                fichero = new FileWriter(path);
+                pw = new PrintWriter(fichero);
+
+                for (int i = 0; i < 10; i++)
+                    pw.println(buceador.getNombre()+"  "+buceador.getPuntos());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+               try {
+               // Nuevamente aprovechamos el finally para 
+               // asegurarnos que se cierra el fichero.
+               if (null != fichero)
+                  fichero.close();
+               } catch (Exception e2) {
+                  e2.printStackTrace();
+               }
+            }
+        }
 
     }
 
