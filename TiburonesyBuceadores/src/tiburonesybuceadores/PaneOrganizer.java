@@ -163,7 +163,8 @@ public class PaneOrganizer {
 
         String opcion;
         private Buceador buceador;
-
+        Thread juego;
+        
         public AccionBotones(String opcion) {
             this.opcion = opcion;
         }
@@ -204,7 +205,7 @@ public class PaneOrganizer {
             vidas.setTextFill(Color.RED);
             raiz.getChildren().add(vidas);
             
-            Thread juego;
+            
             juego = new Thread(new Runnable() {
 
                 @Override
@@ -237,7 +238,9 @@ public class PaneOrganizer {
                                         gameover.setFont(Constantes.GAME_OVER);
                                         gameover.autosize();
                                         raiz.getChildren().add(gameover);
+                                        juego.stop();
                                         pedirGuardarPuntaje();
+                                        
                                         
                                        
                                         
@@ -381,10 +384,11 @@ public class PaneOrganizer {
         
     
         private void pedirGuardarPuntaje(){
+            
             Stage stage = new Stage();
             stage.setResizable(false);
-            Label tag = new Label("¡Bienvenido a Tiburones y Buceadores!\n"
-                    + "¿Desea guardar su puntaje? ");
+            Label tag = new Label("¡Bienvenido "+buceador.getNombre()
+                    + " ¿Desea guardar su puntaje? ");
             tag.setAlignment(Pos.CENTER);
             Button btnok = new Button("OK");
             Button btncancel = new Button ("Cancelar");
@@ -400,11 +404,12 @@ public class PaneOrganizer {
                      Stage alerta = new Stage();
                      VBox alert = new VBox();
                      Button exit = new Button ("Salir");
-                     alert.getChildren().add(exit);
-                     Scene sceneExit = new Scene(alert,100,100);
+                     Label label = new Label ("Se ha guardado su registro correctamente!!...");
+                     alert.getChildren().addAll(exit,label);
+                     Scene sceneExit = new Scene(alert,200,100);
                      alerta.setScene(sceneExit);
                      alerta.setAlwaysOnTop(true);
-                     alerta.setTitle("Se ha guardado su registro correctamente");
+                     
 
                      alerta.initModality(Modality.APPLICATION_MODAL);
                      alerta.showAndWait();
@@ -417,7 +422,7 @@ public class PaneOrganizer {
                     stage.close();   
             });
 
-            Scene scene = new Scene(puntaje, 300,300);
+            Scene scene = new Scene(puntaje, 400,300);
             stage.setScene(scene);
             stage.setHeight(200);
             stage.setWidth(250);
