@@ -54,6 +54,13 @@ public abstract class AnimalMarino implements Runnable {
                         } else {
                             sube_baja = -1;
                         }
+                        
+                        if(animal.getLayoutX()-velocidadInicial == 100){
+                            
+                            System.out.println("Se debio de haber quitado una vida");
+                             
+                        }
+                        
                         animal.setLayoutX(animal.getLayoutX() - velocidadInicial);
                         animal.setLayoutY(animal.getLayoutY() + sube_baja);
                     }
