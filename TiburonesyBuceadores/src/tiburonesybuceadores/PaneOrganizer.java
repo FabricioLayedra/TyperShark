@@ -24,6 +24,7 @@ import java.io.IOException;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -144,6 +145,11 @@ public class PaneOrganizer {
                     stage.close();   
             }
             );
+           name.setOnKeyPressed(event -> {
+                if(event.getCode() == KeyCode.ENTER){
+                 stage.close();
+                }
+            }); 
             
             Scene scene = new Scene(nombre, 300,300);
             stage.setScene(scene);
@@ -231,19 +237,15 @@ public class PaneOrganizer {
                                         
                                     }
                                     if(buceador.getVidas() <= 0){
-                                       //mar.getMar().getChildren().remove(buceador.getPersona());
+                                        mar.getMar().getChildren().remove(buceador.getPersona());
                                         //aqui se muere el bceador
-                                        final Label gameover = new Label("game over");
+                                        final Label gameover = new Label("¡GAME OVER!");
                                         gameover.setTextAlignment(TextAlignment.CENTER);
                                         gameover.setFont(Constantes.GAME_OVER);
                                         gameover.autosize();
                                         raiz.getChildren().add(gameover);
                                         juego.stop();
                                         pedirGuardarPuntaje();
-                                        
-                                        
-                                       
-                                        
                                     }
 
                                     if (Constantes.HACER_BUZO) {
@@ -387,36 +389,35 @@ public class PaneOrganizer {
             
             Stage stage = new Stage();
             stage.setResizable(false);
-            Label tag = new Label("¡Bienvenido "+buceador.getNombre()
-                    + " ¿Desea guardar su puntaje? ");
+            Label tag = new Label("\t¡Bienvenido "+buceador.getNombre()+"!"
+                    + "\n¿Desea guardar su puntaje? ");
             tag.setAlignment(Pos.CENTER);
-            Button btnok = new Button("OK");
-            Button btncancel = new Button ("Cancelar");
+            Button btnok = new Button("SI");
+            Button btncancel = new Button ("NO");
             VBox puntaje = new VBox();
             puntaje.setAlignment(Pos.CENTER);
             puntaje.getChildren().addAll(tag,btnok,btncancel);
-            
             puntaje.setSpacing(20);
-            //btn.setLayoutX(0);
-            
             btnok.setOnAction(e-> {
-                     guardarRegistroPuntaje();
-                     Stage alerta = new Stage();
-                     VBox alert = new VBox();
-                     Button exit = new Button ("Salir");
-                     Label label = new Label ("Se ha guardado su registro correctamente!!...");
-                     alert.getChildren().addAll(exit,label);
-                     Scene sceneExit = new Scene(alert,200,100);
-                     alerta.setScene(sceneExit);
-                     alerta.setAlwaysOnTop(true);
-                     
+                 guardarRegistroPuntaje();
+                 Stage alerta = new Stage();
+                 VBox alert = new VBox();
+                 Button exit = new Button ("Salir");
+                 Label label = new Label ("Se ha guardado su registro correctamente!!");
+                 alert.getChildren().addAll(label,exit);
+                 exit.setAlignment(Pos.CENTER);
+                 exit.setOnAction(f-> {
+                     alerta.close();
+                     stage.close();  
+                 });
 
-                     alerta.initModality(Modality.APPLICATION_MODAL);
-                     alerta.showAndWait();
-                     
-                     
-                     
-            });
+                 Scene sceneExit = new Scene(alert,300,100);
+                 alerta.setScene(sceneExit);
+                 alerta.setTitle("Alerta");
+                 alerta.setAlwaysOnTop(true);
+                 alerta.setMaxWidth(500);
+                 alerta.initModality(Modality.APPLICATION_MODAL);
+                 alerta.showAndWait();});
             
             btncancel.setOnAction(e-> {
                     stage.close();   
@@ -427,7 +428,7 @@ public class PaneOrganizer {
             stage.setHeight(200);
             stage.setWidth(250);
             stage.setAlwaysOnTop(true);
-            stage.setTitle("¿Desea guardar su puntaje?");
+            stage.setTitle("Game Over");
 
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
