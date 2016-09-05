@@ -30,7 +30,7 @@ public class Buceador implements Runnable {
     private boolean llegarAlFondo;
 
     public Buceador(String nombre, double distanciaInicial, Double x, Double y) {
-        this.vidas=3;
+        this.vidas=Constantes.VIDAS_BUCEADOR;
         this.llegarAlFondo = false;
         this.nombre = nombre;
         this.distanciaRecorrida = distanciaInicial;

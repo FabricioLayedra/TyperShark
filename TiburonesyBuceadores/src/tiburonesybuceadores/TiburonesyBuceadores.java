@@ -36,13 +36,8 @@ public class TiburonesyBuceadores extends Application {
         mediaplayer.setAutoPlay(true);
         mediaplayer.setVolume(0.3);
         mediaplayer.setCycleCount((int)(Duration.INDEFINITE.toHours()));
-        PaneOrganizer principal= new PaneOrganizer();
-
-        primaryStage.setResizable(false);
-        primaryStage.setTitle("Tiburones y Buceadores");
+        presentarJuego(primaryStage);
         
-        primaryStage.setScene(principal.getScene());
-        primaryStage.show();
     }
 
     /**
@@ -50,6 +45,14 @@ public class TiburonesyBuceadores extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+    public void presentarJuego(Stage primaryStage){
+        PaneOrganizer principal= new PaneOrganizer();
+        primaryStage= principal.getStage();
+        primaryStage.setResizable(false);
+        primaryStage.setTitle("Tiburones y Buceadores");
+        primaryStage.show();
+        
     }
     
 }

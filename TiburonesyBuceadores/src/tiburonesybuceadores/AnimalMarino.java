@@ -27,11 +27,8 @@ public abstract class AnimalMarino implements Runnable {
     protected double velocidadInicial;
     protected StackPane animal;
     protected Label palabraEncimaAnimal;
-    protected String[] palabrasActuales;
-    protected Label[] palabrasEncima;
     protected int marcaDeNacimiento;
-    protected int palabrasAEliminar;
-    protected int palabrasEliminadas;
+
     
     //Constructor por defecto
     public AnimalMarino() {
@@ -60,14 +57,7 @@ public abstract class AnimalMarino implements Runnable {
                             sube_baja = 1;
                         } else {
                             sube_baja = -1;
-                        }
-                        
-                        if(animal.getLayoutX()-velocidadInicial == 100){
-                            //Si entra a este if es porque el animal (sea piraña, tiburon o tiburon negro)
-                            //ha tocado la zona del buceador
-                            System.out.println("Se debio de haber quitado una vida");
-                        }
-                        
+                        }                       
                         animal.setLayoutX(animal.getLayoutX() - velocidadInicial);
                         animal.setLayoutY(animal.getLayoutY() + sube_baja);
                     }
@@ -128,24 +118,9 @@ public abstract class AnimalMarino implements Runnable {
     public void configurarLetras() {
         this.palabraEncimaAnimal.setFont(Constantes.FUENTE_LETRAS);
     }
-      public int getPalabrasAEliminar() {
-        return palabrasAEliminar;
-    }
+     
 
-    public void setPalabrasAEliminar() {
-        this.palabrasAEliminar = this.palabrasAEliminar - 1;
-        this.palabrasEliminadas=this.palabrasEliminadas+1;
-        if (palabrasAEliminar > 0) {
-            this.palabrasEncima[this.palabrasAEliminar - 1] = new Label(this.palabrasActuales[this.palabrasAEliminar - 1]);
-            this.palabrasEncima[this.palabrasAEliminar - 1].setFont(Constantes.FUENTE_LETRAS);
-            this.animal.getChildren().add(this.palabrasEncima[this.palabrasAEliminar - 1]);
-        }
-        else{
-            this.palabrasEncima[this.palabrasAEliminar - 1] = new Label("");
-            this.palabrasEncima[this.palabrasAEliminar - 1].setFont(Constantes.FUENTE_LETRAS);
-            this.animal.getChildren().add(this.palabrasEncima[this.palabrasAEliminar - 1]);
-        }
-    }
+   
     
     public int getMarcaDeNacimiento() {
         return marcaDeNacimiento;

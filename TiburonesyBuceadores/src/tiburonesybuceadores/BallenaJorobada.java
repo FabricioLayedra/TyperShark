@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package tiburonesybuceadores;
 import com.sun.javafx.iio.ImageFrame;
 import com.sun.javafx.iio.ImageStorage;
@@ -25,14 +20,14 @@ import javafx.scene.layout.StackPane;
  *
  * @author Fabricio Layedra
  */
-public class Tiburon extends AnimalMarino {   
+public class BallenaJorobada extends AnimalMarino {   
     protected String palabraActual;
     
 
-    public Tiburon(double velocidad){
+    public BallenaJorobada(double velocidad){
         super(velocidad);
     }
-    public Tiburon(double velocidad,Double x, Double y){
+    public BallenaJorobada(double velocidad,Double x, Double y){
         super(velocidad);
         this.palabraEncimaAnimal=new Label();
         this.palabraEncimaAnimal.setTextFill(Color.RED);
@@ -41,7 +36,7 @@ public class Tiburon extends AnimalMarino {
         this.animal= new StackPane();
         this.animal.setLayoutX(x);
         this.animal.setLayoutY(y);
-        this.animal.getChildren().add(formarAnimal(Constantes.TIBURON_IMAGE,300,150));
+        this.animal.getChildren().add(formarAnimal(Constantes.BALLENA_JOROBADA,300,150));
         this.palabraEncimaAnimal.setText(palabraActual);
     }    
 
@@ -67,11 +62,11 @@ public class Tiburon extends AnimalMarino {
     
     @Override
     public boolean equals(Object o){
-        Tiburon t=(Tiburon) o;
+        BallenaJorobada t=(BallenaJorobada) o;
         return this.palabraActual.equals(t.obtenerCaracteresActuales());       
     } 
     
-    public Pane getTiburon(){
+    public Pane getBallenaJorobada(){
         return this.animal;
     }
     

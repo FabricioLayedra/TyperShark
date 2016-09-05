@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package tiburonesybuceadores;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import javafx.event.ActionEvent;
@@ -17,8 +18,7 @@ import javafx.scene.shape.Shape;
  *
  * @author Harold Aragon
  */
- 
- //Clase que interactuará con todos nuestros objetos (Buceador, Piraña y tiburones)
+//Clase que interactuará con todos nuestros objetos (Buceador, Piraña y tiburones)
 public class Mar {//Pane Organizer
 
     private Pane mar;
@@ -29,7 +29,9 @@ public class Mar {//Pane Organizer
     private LinkedList<Buceador> mejoresBuceadores;//cotrol del puntaje;
     private ArrayList<AnimalMarino> animalesEnMar;
     private Buceador buceador;
-    private int puntos= 0;
+    private int puntos = 0;
+    private int puntosPoderEspecial = 0;
+    protected Boolean bandera;
 
     public int getPuntos() {
         return puntos;
@@ -46,6 +48,7 @@ public class Mar {//Pane Organizer
         this.mar.setPrefSize(Constantes.TAM_MAR_X, Constantes.TAM_MAR_Y);
         this.animalesEnMar = new ArrayList<AnimalMarino>();
         this.marea = new Scene(panelInicial);
+        this.bandera=false;
         MarLimpio marLimpio = new MarLimpio();
         marea.setOnKeyPressed(marLimpio);
 
@@ -54,7 +57,7 @@ public class Mar {//Pane Organizer
     public void aumentarNivel() {
         this.nivelMarea = this.nivelMarea + 1;
     }
-    
+
     //Getters and Setters
     public double getDistanciaAlFondo() {
         return distanciaAlFondo;
@@ -96,6 +99,8 @@ public class Mar {//Pane Organizer
         return this.marea;
     }
 
+
+
     public ArrayList<AnimalMarino> getAnimalesEnMar() {
         return animalesEnMar;
     }
@@ -111,8 +116,13 @@ public class Mar {//Pane Organizer
     public void setBuceador(Buceador buceador) {
         this.buceador = buceador;
     }
+
+    public Boolean getBandera() {
+        return bandera;
+    }
     
     
+
     //Se crea un buceador como hilo 
     public Thread ingresarPersonaAlMar(String nombre) {
         this.buceador = new Buceador(nombre, 0, 0.0, 20.0);
@@ -144,26 +154,30 @@ public class Mar {//Pane Organizer
             animalMarino = new Pirania(velocidad, posIniX, posIniY);
             animalMarino.aparecerCaracteresActuales(abecedario);
         }
-         // 60 < Probabilidad < 85, se crea tiburon
-        if (probabilidades > 60 && probabilidades < 85) {
+        if (probabilidades < 85 && probabilidades > 65) {
+            animalMarino = new BallenaJorobada(velocidad, posIniX, posIniY);
+            animalMarino.aparecerCaracteresActuales(diccionario);
+        }
+        // 60 < Probabilidad < 85, se crea tiburon
+        if (probabilidades > 60 && probabilidades < 65) {
             animalMarino = new Tiburon(velocidad, posIniX, posIniY);
             animalMarino.aparecerCaracteresActuales(diccionario);
         }
-        
+
         //Probabilidad > 85, se crea Tiburón negro
         if (probabilidades >= 85) {
-            animalMarino = (TiburonNegro) new TiburonNegro(velocidad, posIniX, posIniY,Constantes.marcaDeNacimiento);
+            animalMarino =new TiburonNegro(velocidad, posIniX, posIniY, Constantes.marcaDeNacimiento);
             Constantes.marcaDeNacimiento++;
             animalMarino.aparecerCaracteresActuales(diccionario);
         }
-        
+
         this.animalesEnMar.add(animalMarino);//Se agrega al arrayList el animal creado
         this.mar.getChildren().add(animalMarino.getAnimal());//Se agrega al Mar (Pane), el animal marino
 
         return new Thread(animalMarino);
 
     }
-    
+
     //Clase que manejará los eventos del teclado y removerá el animalMarino creado
     private class MarLimpio implements EventHandler<KeyEvent> {
 
@@ -171,8 +185,7 @@ public class Mar {//Pane Organizer
         private String caracterIngresado = "";
         private String palabrasAEscribir;
         private String caracterActual;
-        
-
+        int j=0;
         public MarLimpio() {
 
         }
@@ -182,23 +195,34 @@ public class Mar {//Pane Organizer
 
             this.caracterIngresado = teclado.getText();
             this.palabrasEscritas += this.caracterIngresado;
-            System.out.println(palabrasEscritas);
-            System.out.println(animalesEnMar.size());
+            String enter = teclado.getCode().toString();
             boolean iterar = true;
+            
             if (iterar) {
                 for (int i = 0; i < animalesEnMar.size(); i++) {
-                    if (animalesEnMar.get(i).getClass().getSimpleName().equals("Tiburon")) {
-                        Tiburon tiburonTemp = (Tiburon) animalesEnMar.get(i);
-                        if (this.palabrasEscritas.contains(tiburonTemp.obtenerCaracteresActuales())) {
+                    if (animalesEnMar.get(i).getClass().getSimpleName().equals("BallenaJorobada")) {
+                        BallenaJorobada temp = (BallenaJorobada) animalesEnMar.get(i);
+                        String letrasValidas = new String(temp.obtenerCaracteresActuales());
+                        if (this.palabrasEscritas.contains(letrasValidas)) {
                             try {
-                                animalesEnMar.remove(tiburonTemp);
+                                animalesEnMar.remove(temp);
+                                for (int j = 0; j < animalesEnMar.size(); j++) {
+                                    if (animalesEnMar.get(j).getClass().getSimpleName().equals("TiburonNegro")) {
+                                        TiburonNegro tempo= (TiburonNegro) animalesEnMar.get(j);
+                                        animalesEnMar.remove(tempo);
+                                        mar.getChildren().remove(tempo.getAnimal());
+                                    }
+                                }
+                              
                             } catch (ClassCastException e) {
                                 //no hacer remove si no se puede
                             }
-                            mar.getChildren().remove(tiburonTemp.getTiburon());
-                            int puntosAct= this.palabrasEscritas.length();
-                            puntos +=puntosAct;
+                            mar.getChildren().remove(temp.getBallenaJorobada());
+                            int puntosAct = letrasValidas.length();
+                            puntos += puntosAct;
+                            puntosPoderEspecial += puntosAct;
                             buceador.setPuntos(puntos);
+                            buceador.setPorcentajePoderEspecial(puntosPoderEspecial);
                             System.out.print(puntos);
                             this.palabrasEscritas = "";
                             iterar = false;
@@ -209,10 +233,68 @@ public class Mar {//Pane Organizer
 
             }
             
+            
+            if (iterar) {
+                for (int i = 0; i < animalesEnMar.size(); i++) {
+                    if (animalesEnMar.get(i).getClass().getSimpleName().equals("TiburonNegro")) {
+                        TiburonNegro tibNegroTemp = (TiburonNegro) animalesEnMar.get(i);
+                        String letrasValidas = new String(tibNegroTemp.obtenerCaracteresActuales());
+                        if (this.palabrasEscritas.contains(tibNegroTemp.obtenerCaracteresActuales())) {
+                            try {
+                                animalesEnMar.remove(tibNegroTemp);    
+                                
+                            } catch (ClassCastException e) {
+                                //no hacer remove si no se puede
+                            }
+                            mar.getChildren().remove(tibNegroTemp.getAnimal());
+                            this.palabrasEscritas = "";
+                            iterar = false;
+                            int puntosAct = letrasValidas.length();
+                            puntos += puntosAct;
+                            puntosPoderEspecial += puntosAct;
+                            buceador.setPuntos(puntos);
+                            buceador.setPorcentajePoderEspecial(puntosPoderEspecial);
+                            this.palabrasEscritas = "";
+                            iterar = false;
+                            break;
+                        }
+
+                    }
+                }
+
+            }
+            if (iterar) {
+                for (int i = 0; i < animalesEnMar.size(); i++) {
+                    if (animalesEnMar.get(i).getClass().getSimpleName().equals("Tiburon")) {
+                        Tiburon tiburonTemp = (Tiburon) animalesEnMar.get(i);
+                        String letrasValidas = new String(tiburonTemp.obtenerCaracteresActuales());
+                        if (this.palabrasEscritas.contains(letrasValidas)) {
+                            try {
+                                animalesEnMar.remove(tiburonTemp);
+                            } catch (ClassCastException e) {
+                                //no hacer remove si no se puede
+                            }
+                            mar.getChildren().remove(tiburonTemp.getTiburon());
+                            int puntosAct = letrasValidas.length();
+                            puntos += puntosAct;
+                            puntosPoderEspecial += puntosAct;
+                            buceador.setPuntos(puntos);
+                            buceador.setPorcentajePoderEspecial(puntosPoderEspecial);
+                            System.out.print(puntos);
+                            this.palabrasEscritas = "";
+                            iterar = false;
+                            break;
+                        }
+                    }
+                }
+
+            }
+
             if (iterar) {
                 for (int i = 0; i < animalesEnMar.size(); i++) {
                     if (animalesEnMar.get(i).getClass().getSimpleName().equals("Pirania")) {
                         Pirania piraniaTemp = (Pirania) animalesEnMar.get(i);
+                        String letrasValidas = new String(piraniaTemp.obtenerCaracteresActuales());
                         if (piraniaTemp.obtenerCaracteresActuales().equals(this.caracterIngresado)) {
                             try {
                                 animalesEnMar.remove(piraniaTemp);
@@ -220,51 +302,33 @@ public class Mar {//Pane Organizer
                                 //no hacer remove si no se puede
                             }
                             mar.getChildren().remove(piraniaTemp.getAnimal());
-                            int puntosAct= this.palabrasEscritas.length();
-                            puntos +=puntosAct;
+                            int puntosAct = letrasValidas.length();
+                            puntos += puntosAct;
+                            puntosPoderEspecial += puntosAct;
                             buceador.setPuntos(puntos);
+                            buceador.setPorcentajePoderEspecial(puntosPoderEspecial);
                             System.out.print(puntos);
-                            this.palabrasEscritas = "";
+                            iterar = false;
                             break;
                         }
                     }
                 }
             }
-            if (iterar) {
-                for (int i = 0; i < animalesEnMar.size(); i++) {                   
-                    if (animalesEnMar.get(i).getClass().getSimpleName().equals("TiburonNegro")) {
-                        TiburonNegro tibNegroTemp = (TiburonNegro) animalesEnMar.get(i);
-                        System.out.println(tibNegroTemp.obtenerCaracteresActuales());
-                        if (this.palabrasEscritas.contains(tibNegroTemp.obtenerCaracteresActuales())) {
-                            animalesEnMar.get(i).getAnimal().getChildren().remove(1);
-                            animalesEnMar.get(i).setPalabrasAEliminar();
-                            System.out.println(animalesEnMar.get(i).getPalabrasAEliminar());
-                            if (animalesEnMar.get(i).getPalabrasAEliminar() == 0) {
-                                System.out.println(animalesEnMar.get(i).getMarcaDeNacimiento());
-                                try {
-                                    animalesEnMar.remove(animalesEnMar.get(i));
-                                    System.out.println(animalesEnMar.get(i).getMarcaDeNacimiento());
-                                    System.out.println(animalesEnMar.get(i).getMarcaDeNacimiento());
-                                    mar.getChildren().remove(animalesEnMar.get(i).getAnimal());
-                                } catch (ClassCastException e) {
-                                    //no hacer remove si no se puede
-                                }                              
-                                int puntosAct = this.palabrasEscritas.length();
-                                puntos += puntosAct;
-                                buceador.setPuntos(puntos);
-                                this.palabrasEscritas = "";
-                                break;
-
-                            }
-                            this.palabrasEscritas = "";
-                            break;
-
-                        }
+            
+            if (buceador.getPorcentajePoderEspecial() >= 25) {
+                if (enter.equals("ENTER")) {
+                    puntosPoderEspecial = 0;
+                    bandera=true;
+                    while (mar.getChildren().get(2) != null) {
+                        mar.getChildren().remove(2);
+                        buceador.setPorcentajePoderEspecial(0);
                     }
-
-                }
+                }         
+            }
+            else{
+              bandera=false;    
             }
         }
-
     }
+
 }
