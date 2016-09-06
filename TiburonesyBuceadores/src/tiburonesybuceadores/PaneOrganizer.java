@@ -179,7 +179,7 @@ public class PaneOrganizer {
         private Label poder_especial;
         private Label puntos;
         private Label gameover;
-        private Boolean ppe =false;
+        private Boolean ppe =false;//ppe (Porcentaje Poder Especial)
 
         public AccionBotones(String opcion) {
             this.opcion = opcion;
@@ -266,6 +266,7 @@ public class PaneOrganizer {
                                                 mar.getMar().visibleProperty().setValue(Boolean.FALSE);
                                                 juego.stop();
                                                 gameover.setVisible(true);
+                                                guardarNivelPuntajeVidasPoderEspecial();
                                                 pedirGuardarPuntaje();
                                                 break;
                                             }
@@ -275,7 +276,6 @@ public class PaneOrganizer {
                                     if (buceador.getVidas() <= 0) {
                                         mar.getMar().getChildren().remove(1);
                                         //aqui se muere el bceador
-
                                     }
 
                                     if (Constantes.HACER_BUZO) {
@@ -371,6 +371,36 @@ public class PaneOrganizer {
 
         }
 
+        private void guardarNivelPuntajeVidasPoderEspecial() {
+            /*
+            Se guardará en el archivo juego_guardado.txt con el siguiente formato:
+                nombreJugador;vidas;puntaje;nivel;PoderEspecial
+            */
+            String path = new File("src/tiburonesybuceadores/juego_guardado.txt").getAbsolutePath();
+            FileWriter fichero = null;
+            PrintWriter pw = null;
+            try
+            {
+                fichero = new FileWriter(path);
+                pw = new PrintWriter(fichero);
+                pw.println(buceador.getNombre()+";"+buceador.getVidas()+";"+mar.getPuntos()
+                        +";"+mar.getNivelMarea()+";"+mar.getBuceador().getPorcentajePoderEspecial());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                // Nuevamente aprovechamos el finally para 
+               // asegurarnos que se cierra el fichero.
+               try {
+                    if (null != fichero)
+                        fichero.close();
+               } catch (Exception e2) {
+                  e2.printStackTrace();
+               }
+            }
+            
+            
+        }
         private int verMejJugadores() {
             Scanner scores = null;
             String mej_jug = "";
@@ -433,6 +463,7 @@ public class PaneOrganizer {
             puntaje.setAlignment(Pos.CENTER);
             puntaje.getChildren().addAll(tag,btnok,btncancel);
             puntaje.setSpacing(20);
+            
             /*Configurando boton de que desea guardar puntaje tanto con el mouse
                 como con el enter del teclado
             */
@@ -516,7 +547,7 @@ public class PaneOrganizer {
             {
                 fichero = new FileWriter(path);
                 pw = new PrintWriter(fichero);
-                pw.println(buceador.getNombre()+"  "+buceador.getPuntos());
+                pw.println(buceador.getNombre()+"  "+mar.getPuntos());
 
             } catch (Exception e) {
                 e.printStackTrace();
