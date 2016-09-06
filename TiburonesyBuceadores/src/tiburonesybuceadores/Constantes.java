@@ -42,13 +42,15 @@ public class Constantes {
     public static final long VELOCIDAD_APARICION_LVL_1=5000;
     public static final Font FUENTE_LETRAS = new Font("Comic Sans MS",35);
     public static Font GAME_OVER= new Font("Comic Sans MS",100);
+    public static Font MEJORES_JUGADORES_TITULO= new Font("Monotype Corsiva",40);
+    public static Font MEJORES_JUGADORES_LISTA= new Font("Comic Sans MS",30);
     public static  boolean HACER_BUZO=true;
-    public static final String INSTRUCCIONES = "Instrucciones: \n "
-            + "1. Para ganar puntos: Teclea las palabras que aparezcan\n en los animales marinos. "
-            + "Para hacerlos desaparecer \n"
-            + "2. Si alguno de ellos te toca, pierdes una vida. Sólo posees 3 vidas. \n"
+    public static final String INSTRUCCIONES = "Instrucciones: \n\n "
+            + "1. Para ganar puntos: Teclea las palabras que aparezcan\n en los animales marinos, "
+            + "para hacerlos desaparecer \n\n"
+            + "2. Si alguno de ellos te toca, pierdes una vida. Sólo posees 3 vidas. \n\n"
             + "3. Cuando tengas más de 25 puntos, tendrás un poder especial. "
-            + "DESCÚBRELO\n";
+            + "DESCÚBRELO\n\n";
     
     public static int TOP_MEJORES_JUGADORES=10;
     public static int marcaDeNacimiento=0;

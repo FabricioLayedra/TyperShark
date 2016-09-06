@@ -43,23 +43,26 @@ public class PaneOrganizer {
     private Stage pcpal;
     private Pane raiz;
     private Mar mar;
-    Scene scene;
-    Scene scene_pedir_nombre;
-    Button[] botones;
-    Button iniciar;
-    Button instrucciones;
-    Button mejoresJugadores;
-    Button salir;
-    Button regresar;
-    VBox buttons;
-    VBox nombre;
-    Label nivel;
-    String nombre_jugador;
-    private Label titulo;
+    private Scene scene;
+    private Button[] botones;
+    private Button iniciar;
+    private Button instrucciones;
+    private Button mejoresJugadores;
+    private Button salir;
+    private Button regresar;
+    private Button guardar_juego;
+    private VBox buttons;
+    private String nombre_jugador;
+    //Label de nivel y de titulo del menú principal
+        private Label titulo, nivel;
+    //Labels de Ver Mejores Jugadores
+        private Label the_best_players,titulo_mejores_jugadores;
+    //Labels de Ver Instrucciones
+        private Label instructions;
 
     public PaneOrganizer() {
         
-        
+        this.inicializarLabelsGlobales();
         this.nombre_jugador = pedirNombre();
         this.mar = new Mar(Constantes.FONDO_MAR_LVL_1);
         this.raiz = mar.getPanelInicial();
@@ -123,11 +126,20 @@ public class PaneOrganizer {
             buttons.setAlignment(Pos.CENTER);
             temp.setOnAction(new AccionBotones(temp.getText()));
         }
-        buttons.setLayoutX((Constantes.TAM_MAR_X / 2) - 120);
-        buttons.setLayoutY(200);
-        this.raiz.getChildren().add(buttons);
-        regresar = new Button("Menu Principal");
-        regresar.setOnAction(new AccionBotones("Regresar"));
+        //Configurando panel de botones del MENU PRINCIPAL
+            buttons.setLayoutX((Constantes.TAM_MAR_X / 2) - 120);
+            buttons.setLayoutY(200);
+        //Configurando boton regresar
+            regresar = new Button("Regresar");
+            regresar.setOnAction(new AccionBotones("Regresar"));
+            regresar.setVisible(false);
+        //Configurando boton guardar_juego; mientras el usuario juega
+            guardar_juego = new Button("Guardar Juego");
+            guardar_juego.setOnAction(new AccionBotones("Guardar Juego")); 
+            guardar_juego.setVisible(false);
+
+        this.raiz.getChildren().addAll(buttons,guardar_juego,regresar);
+        
 
     }
 
@@ -169,6 +181,14 @@ public class PaneOrganizer {
         stage.showAndWait();
 
         return name.getText();
+    }
+
+    private void inicializarLabelsGlobales() {
+        this.the_best_players=new Label();
+        this.titulo=new Label();
+        this.nivel=new Label();
+        this.titulo_mejores_jugadores=new Label();
+        this.instructions=new Label();
     }
 
     private class AccionBotones implements EventHandler<ActionEvent> {
@@ -266,7 +286,7 @@ public class PaneOrganizer {
                                                 mar.getMar().visibleProperty().setValue(Boolean.FALSE);
                                                 juego.stop();
                                                 gameover.setVisible(true);
-                                                guardarNivelPuntajeVidasPoderEspecial();
+                                                //guardarNivelPuntajeVidasPoderEspecial();//lo puse aqui para ver si el metodo sirve, (funciona!!)
                                                 pedirGuardarPuntaje();
                                                 break;
                                             }
@@ -331,14 +351,21 @@ public class PaneOrganizer {
 
         @Override
         public void handle(ActionEvent event) {
-            raiz.getChildren().remove(buttons);
-            raiz.getChildren().remove(titulo);
-            raiz.getChildren().add(regresar);
+            buttons.setVisible(false);
+            titulo.setVisible(false);
+            regresar.setVisible(true);
+            
             int retirar=0;
             switch (opcion) {
                 case "Iniciar": {
-                    regresar.setLayoutX(0);
-                    regresar.setLayoutY(Constantes.TAM_MAR_Y - 20);
+                    //Configurando posicion del boton regresar
+                        regresar.setLayoutX(Constantes.TAM_MAR_X - 60);
+                        regresar.setLayoutY(Constantes.TAM_MAR_Y - 20);
+                    //Mostrando boton Guardar Juego y configurando su posicion
+                        guardar_juego.setLayoutX(0);
+                        guardar_juego.setLayoutY(Constantes.TAM_MAR_Y - 20);
+                        guardar_juego.setVisible(true);
+                    mar.getMar().visibleProperty().setValue(Boolean.TRUE);
                     this.jugar();
                     break;
                 }
@@ -363,8 +390,30 @@ public class PaneOrganizer {
                     break;
                 }
                 
-                case "Regresar":{                                      
-                    raiz.getChildren().remove(retirar);
+                case "Guardar Juego":{
+                    guardarNivelPuntajeVidasPoderEspecial();
+                    crearAlerta("Se ha guardado su juego!!!...");
+                    break;
+                }
+                
+                case "Regresar":{
+                    retirar=0; //,
+                    //juego.stop();
+                    mar.getMar().visibleProperty().setValue(Boolean.FALSE);
+                    /*Quitando todos los Labels Mostrados, incluyendo 
+                      a los botones regresar y guardar juego  
+                     */
+                        guardar_juego.setVisible(false);
+                        instructions.setVisible(false);
+                        regresar.setVisible(false);
+                        titulo_mejores_jugadores.setVisible(false);
+                        the_best_players.setVisible(false);
+                        
+                        
+                    //Haciendo aparecer MENÚ PRINCIPAL
+                        buttons.setVisible(true);
+                        titulo.setVisible(true);
+
                     break;
                 }
             }
@@ -387,6 +436,7 @@ public class PaneOrganizer {
                         +";"+mar.getNivelMarea()+";"+mar.getBuceador().getPorcentajePoderEspecial());
 
             } catch (Exception e) {
+                System.out.println("Estoy cayendo en la primera excepcion");
                 e.printStackTrace();
             } finally {
                 // Nuevamente aprovechamos el finally para 
@@ -395,6 +445,7 @@ public class PaneOrganizer {
                     if (null != fichero)
                         fichero.close();
                } catch (Exception e2) {
+                  System.out.println("Estoy cayendo en la segunda excepcion");
                   e2.printStackTrace();
                }
             }
@@ -403,7 +454,7 @@ public class PaneOrganizer {
         }
         private int verMejJugadores() {
             Scanner scores = null;
-            String mej_jug = "";
+            String mej_jug = "Nombre\t\tPuntaje\n";
             try {
                 scores = new Scanner(new File("src/tiburonesybuceadores/scores.txt"));
             } catch (FileNotFoundException ex) {
@@ -412,22 +463,38 @@ public class PaneOrganizer {
             final String[] mejores_jugadores;
             mejores_jugadores = new String[Constantes.TOP_MEJORES_JUGADORES];
 
-            Label the_best_players = new Label();
-            the_best_players.setTextAlignment(TextAlignment.CENTER);
-            the_best_players.setLayoutX((Constantes.TAM_MAR_X / 2) + 150);
-            the_best_players.setLayoutY((Constantes.TAM_MAR_Y / 2) - 100);
-            the_best_players.setTextFill(Color.WHITE);
-            the_best_players.setLineSpacing(10);
+            the_best_players = new Label();
+                //Configurando Formato y Posición del Label
+                the_best_players.setTextAlignment(TextAlignment.CENTER);
+                the_best_players.setLayoutX((Constantes.TAM_MAR_X/2) + 10);
+                the_best_players.setLayoutY((Constantes.TAM_MAR_Y/2) - 200);
+                the_best_players.setTextFill(Color.DARKGREEN);
+                the_best_players.setLineSpacing(10);
+                the_best_players.setFont(Constantes.MEJORES_JUGADORES_LISTA);
+                
+            titulo_mejores_jugadores = new Label("MEJORES JUGADORES DE TYPERSHARK");
+                //Configurando Formato y Posición del Label
+                titulo_mejores_jugadores.setTextAlignment(TextAlignment.CENTER);
+                titulo_mejores_jugadores.setLayoutX(50);
+                titulo_mejores_jugadores.setLayoutY(50);
+                titulo_mejores_jugadores.setTextFill(Color.BLACK);
+                titulo_mejores_jugadores.setFont(Constantes.MEJORES_JUGADORES_TITULO);
 
             int indice = 0;
+           
             while (scores.hasNextLine()) {
                 mejores_jugadores[indice] = scores.nextLine();
-                mej_jug = mej_jug + mejores_jugadores[indice] + "\n";
+                mej_jug = mej_jug + (indice + 1)+".- "+ mejores_jugadores[indice] + "\n";
                 System.out.println(mejores_jugadores[indice]);
                 indice++;
             }
-            the_best_players.setText(mej_jug);
-            raiz.getChildren().add(the_best_players);
+            //Haciendo aparecer Labels
+                titulo_mejores_jugadores.setVisible(true);
+                the_best_players.setVisible(true);
+            //Seteando el label de mejores jugadores leidos en el archivo "scores.txt"
+                the_best_players.setText(mej_jug);
+            //Agregando Labels al root
+                raiz.getChildren().addAll(titulo_mejores_jugadores,the_best_players);
             int indice5=raiz.getChildren().indexOf(the_best_players);
             return indice5;
 
@@ -435,15 +502,15 @@ public class PaneOrganizer {
 
         private int verInstrucciones() {
 
-            Label instructions = new Label(Constantes.INSTRUCCIONES);
+            instructions = new Label(Constantes.INSTRUCCIONES);
             instructions.setFont(new Font("Comic Sans MS", 20));
             instructions.setTextAlignment(TextAlignment.CENTER);
-            
             instructions.setTextFill(Color.WHITE);
             instructions.setLineSpacing(10);
             instructions.autosize();
             instructions.setLayoutX(80);
             instructions.setLayoutY(100);
+            instructions.setVisible(true);
             raiz.getChildren().add(instructions);
             int indice5=raiz.getChildren().indexOf(instructions);
             return indice5;
@@ -502,14 +569,18 @@ public class PaneOrganizer {
             stage.showAndWait();
            
         }
-        //Método que indica que el usuario desea guardar el puntaje     
-        public void haPresionadoSi(){
-                guardarRegistroPuntaje();
-                Stage alerta = new Stage();
+        
+        
+        /*  Lo que hace esta funcion "crearAlerta(String leyenda)"es crear una nueva 
+            ventana 1ue muestra una leyenda y un boton salir; ya tiene configurado
+            el boton salir que se cerrará tanto con enter como con click
+        */
+        public void crearAlerta(String leyenda){
+            Stage alerta = new Stage();
                 BorderPane alertbp = new BorderPane();
                 VBox alert = new VBox();
                 Button exit = new Button ("Salir");
-                Label label = new Label ("Se ha guardado su registro correctamente!!");
+                Label label = new Label (leyenda);
                 alertbp.setCenter(exit);
                 alert.getChildren().addAll(label,alertbp);
                  
@@ -537,6 +608,11 @@ public class PaneOrganizer {
                  alerta.initModality(Modality.APPLICATION_MODAL);
                  alerta.showAndWait();
         }
+        //Método que indica que el usuario desea guardar el puntaje     
+        public void haPresionadoSi(){
+                guardarRegistroPuntaje();
+                crearAlerta("Se ha guardado su registro correctamente!!");        
+        }
         
         
         private void  guardarRegistroPuntaje(){
@@ -547,7 +623,7 @@ public class PaneOrganizer {
             {
                 fichero = new FileWriter(path);
                 pw = new PrintWriter(fichero);
-                pw.println(buceador.getNombre()+"  "+mar.getPuntos());
+                pw.println(buceador.getNombre()+"\t\t"+mar.getPuntos());
 
             } catch (Exception e) {
                 e.printStackTrace();
