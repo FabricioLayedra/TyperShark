@@ -19,7 +19,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -146,7 +145,7 @@ public class PaneOrganizer {
             guardar_juego = new Button("Guardar Juego");
             guardar_juego.setOnAction(ev-> {
                    guardarNivelPuntajeVidasPoderEspecial();
-                   crearAlerta("Se ha guardado su juego!!!...");
+                   crearAlerta("Se ha guardado su juego!!!...",300,100);
             }); 
             guardar_juego.setVisible(false);
         
@@ -242,11 +241,12 @@ public class PaneOrganizer {
             }  
     }
             
-    /*  Lo que hace esta funcion "crearAlerta(String leyenda)"es crear una nueva 
-        ventana 1ue muestra una leyenda y un boton salir; ya tiene configurado
-        el boton salir que se cerrará tanto con enter como con click
+    /*  Lo que hace esta funcion "crearAlerta(String leyenda,double ancho, double alto)"
+    es crear una nueva ventana 1ue muestra una leyenda y un boton salir, se le debe mandar
+    el ancho y alto que tendrá la alerta; ya tiene configurado el boton salir que se 
+    cerrará tanto con enter como con click
     */
-    public void crearAlerta(String leyenda){
+    public void crearAlerta(String leyenda,double ancho, double alto){
             Stage alerta = new Stage();
                 BorderPane alertbp = new BorderPane();
                 VBox alert = new VBox();
@@ -270,8 +270,8 @@ public class PaneOrganizer {
                     }
                  }); 
                  
-
-                 Scene sceneExit = new Scene(alert,300,100);
+                 
+                 Scene sceneExit = new Scene(alert,ancho,alto);
                  alerta.setScene(sceneExit);
                  alerta.setTitle("Alerta");
                  alerta.setAlwaysOnTop(true);
@@ -300,7 +300,7 @@ public class PaneOrganizer {
 
         public void jugar(Buceador buceador) {
            String diccionario_bj[],diccionario[];
-           diccionario_bj=leerArchivo("src/tiburonesybuceadores/palabrasprof.txt");
+           diccionario_bj=leerArchivo("src/tiburonesybuceadores/PalabrasBallena.txt");
            diccionario=leerArchivo("src/tiburonesybuceadores/diccionario.txt");
 
             final String[] abecedario = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
@@ -453,7 +453,7 @@ public class PaneOrganizer {
                     //Dando formato al botón regresar
                     
                     darFormatoBoton(regresar,(Constantes.TAM_MAR_X - 60),(Constantes.TAM_MAR_Y - 40),true);
-                    retirar=this.verMejJugadores();
+                    retirar=this.LeerMejoresJugadores();
                     break;
                 }
                 case "Leer Juego":{
@@ -500,15 +500,15 @@ public class PaneOrganizer {
             //Recibe la dirección del archivo
             Scanner palabras = null;
             Scanner  pal = null;
-            File file;
+            File file= new File(direccion);
             final String[] diccionario;
             try {
-                palabras = new Scanner(new File(direccion));
+                palabras = new Scanner(file);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
             }
             if(palabras!=null)
-                System.out.println("He leido correctamente el archivo:\n\t\t"+direccion);
+                System.out.println("He leido correctamente el archivo:\t"+file.getName());
             diccionario = new String[Constantes.NUM_PALABRAS];
             int indice = 0;
             while (palabras.hasNextLine()) {
@@ -531,7 +531,10 @@ public class PaneOrganizer {
             System.out.println("\tPUNTAJE: "+datos[2]);
             System.out.println("\tNIVEL: "+datos[3]);
             System.out.println("\tPODER ESPECIAL: "+datos[4]);
-            
+            String datos_alerta = new String("\n\tNOMBRE: "+datos[0]+"\n\tVIDAS: "+datos[1]+
+                    "\n\tPUNTAJE: "+datos[2]+"\n\tNIVEL: "+datos[3]+"\n\tPODER ESPECIAL: "+datos[4]);
+            crearAlerta("Los datos del juego leido son:"+datos_alerta,300,160);
+            crearAlerta("El juego empezara con esos datos!!..",300,70);
             buceador.setNombre(datos[0]);
             buceador.setVidas(Integer.parseInt(datos[1]));
             mar.setPuntos(Integer.parseInt(datos[2]));
@@ -542,7 +545,7 @@ public class PaneOrganizer {
         
         
         
-        private int verMejJugadores() {
+        private int LeerMejoresJugadores() {
             Scanner scores = null;
             String mej_jug = "Nombre\t\tPuntaje\n";
             try {
@@ -556,7 +559,7 @@ public class PaneOrganizer {
             the_best_players = new Label();
                 //Configurando Formato y Posición del Label
                 the_best_players.setTextAlignment(TextAlignment.CENTER);
-                the_best_players.setLayoutX((Constantes.TAM_MAR_X/2) + 10);
+                the_best_players.setLayoutX((Constantes.TAM_MAR_X/4)+20);
                 the_best_players.setLayoutY((Constantes.TAM_MAR_Y/2) - 200);
                 the_best_players.setTextFill(Color.DARKGREEN);
                 the_best_players.setLineSpacing(10);
@@ -625,13 +628,13 @@ public class PaneOrganizer {
             */
             btnok.setOnAction(e-> {
                 guardarRegistroPuntaje();
-                crearAlerta("Se ha guardado su registro correctamente!!");
+                crearAlerta("Se ha guardado su registro correctamente!!",300,100);
                  stage.close();
             });
             btnok.setOnKeyPressed(event -> {
                   if(event.getCode() == KeyCode.ENTER){
                       guardarRegistroPuntaje();
-                      crearAlerta("Se ha guardado su registro correctamente!!");
+                      crearAlerta("Se ha guardado su registro correctamente!!",300,100);
                       stage.close();
                   }
               }); 

@@ -227,6 +227,14 @@ public class Mar {//Pane Organizer
                                 //no hacer remove si no se puede
                             }
                             mar.getChildren().remove(temp.getBallenaJorobada());
+                            for (int j = 0; j < animalesEnMar.size(); j++) {
+                                if (animalesEnMar.get(j).getClass().getSimpleName().equals("TiburonNegro")) {
+                                    //TiburonNegro tibTemp=(TiburonNegro)animalesEnMar.get(j);
+                                    mar.getChildren().remove(animalesEnMar.get(j).getAnimal());
+                                }
+                            }
+                            
+                            
                             int puntosAct = letrasValidas.length();
                             puntos += puntosAct;
                             puntosPoderEspecial += puntosAct;
