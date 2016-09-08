@@ -5,6 +5,7 @@
  */
 package tiburonesybuceadores;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -44,11 +45,14 @@ public class PaneOrganizer {
     private Pane raiz;
     private Mar mar;
     private Scene scene;
-    private Button[] botones;
-    private Button iniciar;
-    private Button instrucciones;
-    private Button mejoresJugadores;
-    private Button salir;
+    //Arreglo de botones del MENU PRINCIPAL
+        private Button[] botones;
+    //Botones del MENU PRINCIPAL
+        private Button iniciar;
+        private Button instrucciones;
+        private Button mejoresJugadores;
+        private Button leer_juego;
+        private Button salir;
     private Button regresar;
     private Button guardar_juego;
     private VBox buttons;
@@ -64,7 +68,9 @@ public class PaneOrganizer {
         
         this.inicializarLabelsGlobales();
         this.nombre_jugador = pedirNombre();
+        
         this.mar = new Mar(Constantes.FONDO_MAR_LVL_1);
+        this.mar.getBuceador().setNombre(nombre_jugador);
         this.raiz = mar.getPanelInicial();
         this.raiz.getChildren().add(mar.getMar());
         this.configurarBotones();
@@ -76,6 +82,7 @@ public class PaneOrganizer {
         this.setTitle("Tiburones y Buceadores");
         this.pcpal = new Stage();
         this.pcpal.setScene(scene);
+        
 
     }
 
@@ -96,8 +103,10 @@ public class PaneOrganizer {
         iniciar = new Button("Iniciar");
         instrucciones = new Button("Ver Instrucciones");
         mejoresJugadores = new Button("Mejores Jugadores");
+        leer_juego= new Button("Leer Juego");
         salir = new Button("Salir");
-        this.botones = new Button[]{iniciar, instrucciones, mejoresJugadores, salir};
+        this.botones = new Button[]{iniciar, instrucciones, mejoresJugadores,leer_juego,salir};
+        
 
     }
 
@@ -128,15 +137,19 @@ public class PaneOrganizer {
         }
         //Configurando panel de botones del MENU PRINCIPAL
             buttons.setLayoutX((Constantes.TAM_MAR_X / 2) - 120);
-            buttons.setLayoutY(200);
+            buttons.setLayoutY(150);
         //Configurando boton regresar
             regresar = new Button("Regresar");
-            regresar.setOnAction(new AccionBotones("Regresar"));
+            regresar.setOnAction(new AccionBotones("Regresar")); 
             regresar.setVisible(false);
         //Configurando boton guardar_juego; mientras el usuario juega
             guardar_juego = new Button("Guardar Juego");
-            guardar_juego.setOnAction(new AccionBotones("Guardar Juego")); 
+            guardar_juego.setOnAction(ev-> {
+                   guardarNivelPuntajeVidasPoderEspecial();
+                   crearAlerta("Se ha guardado su juego!!!...");
+            }); 
             guardar_juego.setVisible(false);
+        
 
         this.raiz.getChildren().addAll(buttons,guardar_juego,regresar);
         
@@ -190,6 +203,85 @@ public class PaneOrganizer {
         this.titulo_mejores_jugadores=new Label();
         this.instructions=new Label();
     }
+    
+    private void guardarNivelPuntajeVidasPoderEspecial() {
+            /*
+            Se guardará en el archivo juego_guardado.txt con el siguiente formato:
+                nombreJugador
+                vidas
+                puntaje
+                nivel
+                Poder Especial
+            Son 5 parámetros que se guardan    
+            */
+            String path = new File("src/tiburonesybuceadores/juego_guardado.txt").getAbsolutePath();
+            FileWriter fichero = null;
+            PrintWriter pw = null;
+            try
+            {
+                fichero = new FileWriter(path);
+                //pw = new PrintWriter(fichero);
+                
+                fichero.write(nombre_jugador+";"+String.valueOf(mar.getBuceador().getVidas())+";"+
+                           String.valueOf(mar.getPuntos())+";"+mar.getNivelMarea()+";"+
+                           String.valueOf(mar.getBuceador().getPorcentajePoderEspecial()));
+
+            } catch (Exception e) {
+                System.out.println("Estoy cayendo en la primera excepcion");
+                e.printStackTrace();
+            } finally {
+                // Nuevamente aprovechamos el finally para 
+               // asegurarnos que se cierra el fichero.
+               try {
+                    if (null != fichero)
+                        fichero.close();
+               } catch (Exception e2) {
+                  System.out.println("Estoy cayendo en la segunda excepcion");
+                  e2.printStackTrace();
+               }
+            }  
+    }
+            
+    /*  Lo que hace esta funcion "crearAlerta(String leyenda)"es crear una nueva 
+        ventana 1ue muestra una leyenda y un boton salir; ya tiene configurado
+        el boton salir que se cerrará tanto con enter como con click
+    */
+    public void crearAlerta(String leyenda){
+            Stage alerta = new Stage();
+                BorderPane alertbp = new BorderPane();
+                VBox alert = new VBox();
+                Button exit = new Button ("Salir");
+                Label label = new Label (leyenda);
+                alertbp.setCenter(exit);
+                alert.getChildren().addAll(label,alertbp);
+                 
+                 //exit.setAlignment(Pos.CENTER);
+                 exit.setLayoutX(400);
+                 
+                 /*Configurando eventos del boton exit para que funcione con
+                      mouse y teclado*/
+                 exit.setOnAction(f-> {
+                     alerta.close();
+                       
+                 });
+                 exit.setOnKeyPressed(event -> {
+                    if(event.getCode() == KeyCode.ENTER){
+                        alerta.close();
+                    }
+                 }); 
+                 
+
+                 Scene sceneExit = new Scene(alert,300,100);
+                 alerta.setScene(sceneExit);
+                 alerta.setTitle("Alerta");
+                 alerta.setAlwaysOnTop(true);
+                 alerta.setMaxWidth(500);
+                 alerta.initModality(Modality.APPLICATION_MODAL);
+                 alerta.showAndWait();
+    }
+    
+    
+    
 
     private class AccionBotones implements EventHandler<ActionEvent> {
         Thread juego;
@@ -199,54 +291,25 @@ public class PaneOrganizer {
         private Label poder_especial;
         private Label puntos;
         private Label gameover;
+        private Label level;
         private Boolean ppe =false;//ppe (Porcentaje Poder Especial)
 
         public AccionBotones(String opcion) {
             this.opcion = opcion;
+            
         }
 
-        public void jugar() {
-
-            Scanner palabras = null;
-            Scanner  pal = null;
-            
-            try {
-                pal = new Scanner(new File("src/tiburonesybuceadores/palabrasprof.txt"));
-                System.out.println("Estoy leyendo el diccionario que envió el profesor");
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            final String[] dic;
-            dic = new String[10];
-                    
-            int ind = 0;
-            while (pal.hasNextLine()) {
-                dic[ind] = pal.nextLine();
-                System.out.println(dic[ind]);
-                ind++;
-            }
-           
-            try {
-                palabras = new Scanner(new File("src/tiburonesybuceadores/diccionario.txt"));
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            final String[] diccionario;
-            diccionario = new String[Constantes.NUM_PALABRAS];
-
-            int indice = 0;
-            while (palabras.hasNextLine()) {
-                diccionario[indice] = palabras.nextLine();
-                System.out.println(diccionario[indice]);
-                indice++;
-            }
+        public void jugar(Buceador buceador) {
+           String diccionario_bj[],diccionario[];
+           diccionario_bj=leerArchivo("src/tiburonesybuceadores/palabrasprof.txt");
+           diccionario=leerArchivo("src/tiburonesybuceadores/diccionario.txt");
 
             final String[] abecedario = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
             final Random rnd = new Random();
-            buceador = new Buceador(nombre_jugador, 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200);
-            //Instanciando labels
+                //Instanciando labels
                 this.puntos = new Label(String.valueOf(mar.getPuntos()));
                 this.vidas = new Label("VIDAS:   " + String.valueOf(buceador.getVidas()));
+                this.level = new Label ("Nivel:   " + String.valueOf(mar.getNivelMarea()));
                 this.poder_especial = new Label("\tPODER ESPECIAL\nPresiona enter para activarlo");
                 this.gameover = new Label("¡GAME OVER!");
             //Configurar los labels, en que parte del Stage aparecerán con su formato
@@ -254,6 +317,7 @@ public class PaneOrganizer {
             //Añadiendo labels al pane
                 raiz.getChildren().add(puntos);
                 raiz.getChildren().add(vidas);
+                raiz.getChildren().add(level);
                 raiz.getChildren().add(poder_especial);
                 raiz.getChildren().add(gameover);
             
@@ -262,7 +326,7 @@ public class PaneOrganizer {
                 @Override
                 public void run() {
                     while (buceador.getVidas() > 0) {
-
+                        
                         while (!(buceador.llegarAlFondo(mar)) && buceador.getVidas() > 0) {
                             final double yTiburon = rnd.nextInt((int) Constantes.TAM_MAR_Y - 150) + 25;
                             double yPirania = rnd.nextInt((int) Constantes.TAM_MAR_Y - 150) + 25;
@@ -272,7 +336,7 @@ public class PaneOrganizer {
                             //en la misma iteracion tiene que salir al menos un animal.
                             Platform.runLater(new Runnable() {
                                 @Override
-                                public void run() {
+                                public void run() {                                                                   
                                     for (int i = 0; i < mar.getAnimalesEnMar().size(); i++) {
                                         if (mar.getAnimalesEnMar().get(i).getAnimal().getLayoutX() <= 0) {
                                             AnimalMarino ani=mar.getAnimalesEnMar().get(i);
@@ -286,13 +350,23 @@ public class PaneOrganizer {
                                                 mar.getMar().visibleProperty().setValue(Boolean.FALSE);
                                                 juego.stop();
                                                 gameover.setVisible(true);
-                                                //guardarNivelPuntajeVidasPoderEspecial();//lo puse aqui para ver si el metodo sirve, (funciona!!)
+                                                
                                                 pedirGuardarPuntaje();
                                                 break;
                                             }
+                                            if (buceador.getVidas() >= 1) {
+                                                vidas.setTextFill(Color.YELLOW);
+                                             }
+                                            if (buceador.getVidas() == 1) {
+                                                /*Para que el nivel le aparezca en rojo;
+                                                  es solo para hacerlo mas realista
+                                                */
+                                                vidas.setTextFill(Color.RED);
+                                             }
                                         }
 
                                     }
+                                    
                                     if (buceador.getVidas() <= 0) {
                                         mar.getMar().getChildren().remove(1);
                                         //aqui se muere el bceador
@@ -309,7 +383,7 @@ public class PaneOrganizer {
                                         int probabilidades = rnd.nextInt(100) + 1;
                                     }
                                     if (probabilidades < 85 && probabilidades > 65) {
-                                        Thread bjtemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_TIBU + (mar.getNivelMarea() / 100), Constantes.TAM_MAR_X, yTiburon, dic);
+                                        Thread bjtemp = mar.ingresarAnimalAlMar(probabilidades, Constantes.VELOCIDAD_INI_TIBU + (mar.getNivelMarea() / 100), Constantes.TAM_MAR_X, yTiburon, diccionario_bj);
                                         bjtemp.start();
                                         int probabilidades = rnd.nextInt(100) + 1;
                                     }
@@ -341,6 +415,7 @@ public class PaneOrganizer {
                             }
                         }
                         mar.setNivelMarea(mar.getNivelMarea() + 1);
+                        level.setText("Nivel:   " + String.valueOf(mar.getNivelMarea()));
                         mar.setDistanciaAlFondo(mar.getDistanciaAlFondo()+ mar.getDistanciaAlFondo()*mar.getNivelMarea());
 
                     }
@@ -358,56 +433,63 @@ public class PaneOrganizer {
             int retirar=0;
             switch (opcion) {
                 case "Iniciar": {
-                    //Configurando posicion del boton regresar
-                        regresar.setLayoutX(Constantes.TAM_MAR_X - 60);
-                        regresar.setLayoutY(Constantes.TAM_MAR_Y - 20);
-                    //Mostrando boton Guardar Juego y configurando su posicion
-                        guardar_juego.setLayoutX(0);
-                        guardar_juego.setLayoutY(Constantes.TAM_MAR_Y - 20);
-                        guardar_juego.setVisible(true);
+                    //Dando formato al botón regresar
+                        darFormatoBoton(regresar,Constantes.TAM_MAR_X - 60,Constantes.TAM_MAR_Y - 20,true);
+                    //Dando formato al botón guardar_juego
+                        darFormatoBoton(guardar_juego,0,Constantes.TAM_MAR_Y - 20,true);    
                     mar.getMar().visibleProperty().setValue(Boolean.TRUE);
-                    this.jugar();
+                   // mar.setBuceador(new Buceador(nombre_jugador, 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200));
+                    this.jugar(mar.getBuceador());
+                    resetearLabelsJuego();
+                    guardarRegistroPuntaje();
+                    guardarRegistroPuntaje();
+                    guardarRegistroPuntaje();
                     break;
                 }
 
                 case "Ver Instrucciones": {
-                    regresar.setLayoutX(Constantes.TAM_MAR_X - 60);
-                    regresar.setLayoutY(Constantes.TAM_MAR_Y - 40);
+                    //Dando formato al botón regresar
+                        darFormatoBoton(regresar,(Constantes.TAM_MAR_X - 60),(Constantes.TAM_MAR_Y - 40),true);
                     retirar=this.verInstrucciones();
                     break;
                 }
 
                 case "Mejores Jugadores": {
+                    //Dando formato al botón regresar
                     
-                    regresar.setLayoutX(Constantes.TAM_MAR_X - 60);
-                    regresar.setLayoutY(Constantes.TAM_MAR_Y - 40);
+                    darFormatoBoton(regresar,(Constantes.TAM_MAR_X - 60),(Constantes.TAM_MAR_Y - 40),true);
                     retirar=this.verMejJugadores();
                     break;
                 }
-
-                case "Salir": {
-                    System.exit(0);
+                case "Leer Juego":{
+                    //Dando formato al botón regresar
+                        darFormatoBoton(regresar,(Constantes.TAM_MAR_X - 60),(Constantes.TAM_MAR_Y - 20),true);
+                    //Dando formato al botón guardar_juego
+                        darFormatoBoton(guardar_juego,0,(Constantes.TAM_MAR_Y - 20),true); 
+                    mar.getMar().visibleProperty().setValue(Boolean.TRUE);
+                    leerJuegoGuardado(mar.getBuceador());
+                    this.jugar(mar.getBuceador());
+                    resetearLabelsJuego();
                     break;
                 }
-                
-                case "Guardar Juego":{
-                    guardarNivelPuntajeVidasPoderEspecial();
-                    crearAlerta("Se ha guardado su juego!!!...");
+                case "Salir": {
+                    System.exit(0);
                     break;
                 }
                 
                 case "Regresar":{
                     retirar=0; //,
                     //juego.stop();
-                    mar.getMar().visibleProperty().setValue(Boolean.FALSE);
+                    mar.getMar().visibleProperty().setValue(Boolean.FALSE);//Ocultando MAR
                     /*Quitando todos los Labels Mostrados, incluyendo 
                       a los botones regresar y guardar juego  
                      */
-                        guardar_juego.setVisible(false);
+                        
                         instructions.setVisible(false);
-                        regresar.setVisible(false);
                         titulo_mejores_jugadores.setVisible(false);
                         the_best_players.setVisible(false);
+                        regresar.setVisible(false);
+                        guardar_juego.setVisible(false);
                         
                         
                     //Haciendo aparecer MENÚ PRINCIPAL
@@ -419,39 +501,52 @@ public class PaneOrganizer {
             }
 
         }
-
-        private void guardarNivelPuntajeVidasPoderEspecial() {
-            /*
-            Se guardará en el archivo juego_guardado.txt con el siguiente formato:
-                nombreJugador;vidas;puntaje;nivel;PoderEspecial
-            */
-            String path = new File("src/tiburonesybuceadores/juego_guardado.txt").getAbsolutePath();
-            FileWriter fichero = null;
-            PrintWriter pw = null;
-            try
-            {
-                fichero = new FileWriter(path);
-                pw = new PrintWriter(fichero);
-                pw.println(buceador.getNombre()+";"+buceador.getVidas()+";"+mar.getPuntos()
-                        +";"+mar.getNivelMarea()+";"+mar.getBuceador().getPorcentajePoderEspecial());
-
-            } catch (Exception e) {
-                System.out.println("Estoy cayendo en la primera excepcion");
-                e.printStackTrace();
-            } finally {
-                // Nuevamente aprovechamos el finally para 
-               // asegurarnos que se cierra el fichero.
-               try {
-                    if (null != fichero)
-                        fichero.close();
-               } catch (Exception e2) {
-                  System.out.println("Estoy cayendo en la segunda excepcion");
-                  e2.printStackTrace();
-               }
+        private String[] leerArchivo(String direccion){
+            //Recibe la dirección del archivo
+            Scanner palabras = null;
+            Scanner  pal = null;
+            File file;
+            final String[] diccionario;
+            try {
+                palabras = new Scanner(new File(direccion));
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(PaneOrganizer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+            if(palabras!=null)
+                System.out.println("He leido correctamente el archivo:\n\t\t"+direccion);
+            diccionario = new String[Constantes.NUM_PALABRAS];
+            int indice = 0;
+            while (palabras.hasNextLine()) {
+                diccionario[indice] = palabras.nextLine();
+                System.out.println("\t"+diccionario[indice]);
+                indice++;
+            }
+            return diccionario;
             
         }
+        
+        
+        private void leerJuegoGuardado(Buceador buceador){
+            String juego_guardado[];
+            juego_guardado=leerArchivo("src/tiburonesybuceadores/juego_guardado.txt");
+            String[] datos = juego_guardado[0].split(";");
+            //Si se imprime lo que lee en el archivo
+            System.out.println("\tNOMBRE: "+datos[0]);
+            System.out.println("\tVIDAS: "+datos[1]);
+            System.out.println("\tPUNTAJE: "+datos[2]);
+            System.out.println("\tNIVEL: "+datos[3]);
+            System.out.println("\tPODER ESPECIAL: "+datos[4]);
+            
+            buceador.setNombre(datos[0]);
+            buceador.setVidas(Integer.parseInt(datos[1]));
+            mar.setPuntos(Integer.parseInt(datos[2]));
+            mar.setNivelMarea(Integer.parseInt(datos[3]));
+            buceador.setPorcentajePoderEspecial(Double.parseDouble(datos[4]));
+        
+        }
+        
+        
+        
         private int verMejJugadores() {
             Scanner scores = null;
             String mej_jug = "Nombre\t\tPuntaje\n";
@@ -485,7 +580,6 @@ public class PaneOrganizer {
             while (scores.hasNextLine()) {
                 mejores_jugadores[indice] = scores.nextLine();
                 mej_jug = mej_jug + (indice + 1)+".- "+ mejores_jugadores[indice] + "\n";
-                System.out.println(mejores_jugadores[indice]);
                 indice++;
             }
             //Haciendo aparecer Labels
@@ -535,12 +629,14 @@ public class PaneOrganizer {
                 como con el enter del teclado
             */
             btnok.setOnAction(e-> {
-                 haPresionadoSi();
+                guardarRegistroPuntaje();
+                crearAlerta("Se ha guardado su registro correctamente!!");
                  stage.close();
             });
             btnok.setOnKeyPressed(event -> {
                   if(event.getCode() == KeyCode.ENTER){
-                      haPresionadoSi();
+                      guardarRegistroPuntaje();
+                      crearAlerta("Se ha guardado su registro correctamente!!");
                       stage.close();
                   }
               }); 
@@ -570,98 +666,85 @@ public class PaneOrganizer {
            
         }
         
-        
-        /*  Lo que hace esta funcion "crearAlerta(String leyenda)"es crear una nueva 
-            ventana 1ue muestra una leyenda y un boton salir; ya tiene configurado
-            el boton salir que se cerrará tanto con enter como con click
-        */
-        public void crearAlerta(String leyenda){
-            Stage alerta = new Stage();
-                BorderPane alertbp = new BorderPane();
-                VBox alert = new VBox();
-                Button exit = new Button ("Salir");
-                Label label = new Label (leyenda);
-                alertbp.setCenter(exit);
-                alert.getChildren().addAll(label,alertbp);
-                 
-                 //exit.setAlignment(Pos.CENTER);
-                 exit.setLayoutX(400);
-                 
-                 /*Configurando eventos del boton exit para que funcione con
-                      mouse y teclado*/
-                 exit.setOnAction(f-> {
-                     alerta.close();
-                       
-                 });
-                 exit.setOnKeyPressed(event -> {
-                    if(event.getCode() == KeyCode.ENTER){
-                        alerta.close();
-                    }
-                 }); 
-                 
-
-                 Scene sceneExit = new Scene(alert,300,100);
-                 alerta.setScene(sceneExit);
-                 alerta.setTitle("Alerta");
-                 alerta.setAlwaysOnTop(true);
-                 alerta.setMaxWidth(500);
-                 alerta.initModality(Modality.APPLICATION_MODAL);
-                 alerta.showAndWait();
-        }
-        //Método que indica que el usuario desea guardar el puntaje     
-        public void haPresionadoSi(){
-                guardarRegistroPuntaje();
-                crearAlerta("Se ha guardado su registro correctamente!!");        
-        }
-        
-        
+      
+    
         private void  guardarRegistroPuntaje(){
             String path = new File("src/tiburonesybuceadores/scores.txt").getAbsolutePath();
-            FileWriter fichero = null;
-            PrintWriter pw = null;
-            try
-            {
-                fichero = new FileWriter(path);
-                pw = new PrintWriter(fichero);
-                pw.println(buceador.getNombre()+"\t\t"+mar.getPuntos());
-
-            } catch (Exception e) {
+            
+//            FileWriter fichero = null;
+//            PrintWriter pw = null;
+//
+//            try
+//            {
+//                fichero = new FileWriter(path,true);
+//                pw = new PrintWriter(fichero);
+//                pw.println(buceador.getNombre()+"\t\t"+mar.getPuntos());
+//                pw.close();
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                // Nuevamente aprovechamos el finally para 
+//               // asegurarnos que se cierra el fichero.
+//               
+//               try {
+//                    if (null != fichero)
+//                        fichero.close();
+//               } catch (Exception e2) {
+//                  e2.printStackTrace();
+//               }
+//            }
+            
+            File archivo = new File(path);
+            try{
+                
+                BufferedWriter bw;
+                if(archivo.exists()) {
+                bw = new BufferedWriter(new FileWriter(archivo, true));//el true es para que no pise el archivo
+                bw.write("El fichero de texto ya estaba creado.");
+                bw.close();
+                } else {
+                bw = new BufferedWriter(new FileWriter(archivo));
+                bw.write("Acabo de crear el fichero de texto.");
+                }
+            }catch (Exception e) {
                 e.printStackTrace();
-            } finally {
-                // Nuevamente aprovechamos el finally para 
-               // asegurarnos que se cierra el fichero.
-               try {
-                    if (null != fichero)
-                        fichero.close();
-               } catch (Exception e2) {
-                  e2.printStackTrace();
-               }
-            }
+            } 
+
+    }
+            
         
-        }
+        
 
         private void configurarLabelsJuego() {
             
              //Configurando Label de puntos
-            this.puntos.setLayoutX(Constantes.TAM_MAR_X - 170);
+            this.puntos.setLayoutX(Constantes.TAM_MAR_X - 200);
             this.puntos.setLayoutY(0);
             this.puntos.setFont(Constantes.FUENTE_LETRAS);
             this.puntos.autosize();
-            this.puntos.setTextFill(Color.RED);
+            this.puntos.setTextFill(Color.YELLOW);
+            
+            //Configurando Label de nivel
+            this.level.setLayoutX(Constantes.TAM_MAR_X - 500);
+            this.level.setLayoutY(0);
+            this.level.setFont(Constantes.FUENTE_LETRAS);
+            this.level.autosize();
+            this.level.setTextFill(Color.YELLOW);
             
             //Configurando Label de vidas
             this.vidas.setLayoutX(50);
             this.vidas.setLayoutY(0);
             this.vidas.setFont(Constantes.FUENTE_LETRAS);
             this.vidas.autosize();
-            this.vidas.setTextFill(Color.RED);
+            this.vidas.setTextFill(Color.YELLOW);
             
             //Configurando Label de poder especial
             this.poder_especial.setLayoutX(300);
             this.poder_especial.setLayoutY(630);
             this.poder_especial.setFont(Constantes.FUENTE_LETRAS);
             this.poder_especial.autosize();
-            this.poder_especial.setTextFill(Color.RED);
+            this.poder_especial.setTextFill(Color.YELLOW);
             this.poder_especial.setVisible(false);
             
                         
@@ -675,6 +758,36 @@ public class PaneOrganizer {
             
 
         }
+        
+        
+        private void resetearLabelsJuego() {
+            /*
+            Esta función lo único que hará será ocultarlos y volverlos a aparecer
+            para que de esa manera no aparezcan superpuesto entre un juego y otro
+            */
+            //Desapareciéndolos
+            this.puntos.setVisible(false);
+            this.level.setVisible(false);
+            this.vidas.setVisible(false);
+            this.poder_especial.setVisible(false);
+            gameover.setVisible(false);
+            
+            //Haciéndolos aparecer
+            this.puntos.setVisible(true);
+            this.level.setVisible(true);
+            this.vidas.setVisible(true);
+            
+        }
+
+        private void darFormatoBoton(Button btn,double x, double y, boolean visible) {
+            /* Método que configura el botón pasado por parámetro donde aparecerá,
+               es decir en que parte de la pantalla y si estará visible o no  */
+            btn.setLayoutX(x);
+            btn.setLayoutY(y);
+            btn.setVisible(visible);
+        }
+        
+        
         
     }
 

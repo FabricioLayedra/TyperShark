@@ -49,6 +49,7 @@ public class Mar {//Pane Organizer
         this.animalesEnMar = new ArrayList<AnimalMarino>();
         this.marea = new Scene(panelInicial);
         this.bandera=false;
+        this.buceador=new Buceador("", 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200);
         MarLimpio marLimpio = new MarLimpio();
         marea.setOnKeyPressed(marLimpio);
 
@@ -99,6 +100,14 @@ public class Mar {//Pane Organizer
         return this.marea;
     }
 
+    public void setPuntos(int puntos) {
+        this.puntos = puntos;
+    }
+
+    public void setPuntosPoderEspecial(int puntosPoderEspecial) {
+        this.puntosPoderEspecial = puntosPoderEspecial;
+    }
+    
 
 
     public ArrayList<AnimalMarino> getAnimalesEnMar() {
@@ -206,13 +215,13 @@ public class Mar {//Pane Organizer
                         if (this.palabrasEscritas.contains(letrasValidas)) {
                             try {
                                 animalesEnMar.remove(temp);
-                                for (int j = 0; j < animalesEnMar.size(); j++) {
-                                    if (animalesEnMar.get(j).getClass().getSimpleName().equals("TiburonNegro")) {
+                                //for (int j = 0; j < animalesEnMar.size(); j++) {
+                                    if (animalesEnMar.get(i).getClass().getSimpleName().equals("TiburonNegro")) {
                                         TiburonNegro tempo= (TiburonNegro) animalesEnMar.get(j);
                                         animalesEnMar.remove(tempo);
                                         mar.getChildren().remove(tempo.getAnimal());
                                     }
-                                }
+                                //}
                               
                             } catch (ClassCastException e) {
                                 //no hacer remove si no se puede
