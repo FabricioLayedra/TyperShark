@@ -1,1 +1,3 @@
-  0
+Daniel		100
+Fabricio	99
+Harold		120

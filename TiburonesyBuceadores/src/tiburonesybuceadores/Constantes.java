@@ -55,5 +55,5 @@ public class Constantes {
     public static int TOP_MEJORES_JUGADORES=10;
     public static int marcaDeNacimiento=0;
     public static int PAL_PROF=10;
-    public static int VIDAS_BUCEADOR=3;
+    public static int VIDAS_BUCEADOR=1;
 }

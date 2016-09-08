@@ -285,8 +285,7 @@ public class PaneOrganizer {
 
     private class AccionBotones implements EventHandler<ActionEvent> {
         Thread juego;
-        String opcion;
-        private Buceador buceador;
+        String opcion; 
         private Label vidas;
         private Label poder_especial;
         private Label puntos;
@@ -350,7 +349,6 @@ public class PaneOrganizer {
                                                 mar.getMar().visibleProperty().setValue(Boolean.FALSE);
                                                 juego.stop();
                                                 gameover.setVisible(true);
-                                                
                                                 pedirGuardarPuntaje();
                                                 break;
                                             }
@@ -441,9 +439,6 @@ public class PaneOrganizer {
                    // mar.setBuceador(new Buceador(nombre_jugador, 0, Constantes.BUCEADOR_X, Constantes.BUCEADOR_Y - 200));
                     this.jugar(mar.getBuceador());
                     resetearLabelsJuego();
-                    guardarRegistroPuntaje();
-                    guardarRegistroPuntaje();
-                    guardarRegistroPuntaje();
                     break;
                 }
 
@@ -615,7 +610,7 @@ public class PaneOrganizer {
             
             Stage stage = new Stage();
             stage.setResizable(false);
-            Label tag = new Label("\t¡Bienvenido "+buceador.getNombre()+"!"
+            Label tag = new Label("\t¡Bienvenido "+mar.getBuceador().getNombre()+"!"
                     + "\n¿Desea guardar su puntaje? ");
             tag.setAlignment(Pos.CENTER);
             Button btnok = new Button("SI");
@@ -670,43 +665,17 @@ public class PaneOrganizer {
     
         private void  guardarRegistroPuntaje(){
             String path = new File("src/tiburonesybuceadores/scores.txt").getAbsolutePath();
-            
-//            FileWriter fichero = null;
-//            PrintWriter pw = null;
-//
-//            try
-//            {
-//                fichero = new FileWriter(path,true);
-//                pw = new PrintWriter(fichero);
-//                pw.println(buceador.getNombre()+"\t\t"+mar.getPuntos());
-//                pw.close();
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            } finally {
-//                // Nuevamente aprovechamos el finally para 
-//               // asegurarnos que se cierra el fichero.
-//               
-//               try {
-//                    if (null != fichero)
-//                        fichero.close();
-//               } catch (Exception e2) {
-//                  e2.printStackTrace();
-//               }
-//            }
-            
+            String str= new String(mar.getBuceador().getNombre()+"\t\t"+mar.getPuntos());  
             File archivo = new File(path);
             try{
-                
                 BufferedWriter bw;
-                if(archivo.exists()) {
+                if(!archivo.exists()) 
+                    archivo.createNewFile();
                 bw = new BufferedWriter(new FileWriter(archivo, true));//el true es para que no pise el archivo
-                bw.write("El fichero de texto ya estaba creado.");
+                bw.write(str);
+                bw.newLine();
                 bw.close();
-                } else {
-                bw = new BufferedWriter(new FileWriter(archivo));
-                bw.write("Acabo de crear el fichero de texto.");
-                }
+               
             }catch (Exception e) {
                 e.printStackTrace();
             } 
